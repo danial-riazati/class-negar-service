@@ -30,18 +30,16 @@ namespace ClassNegarService.Controllers
             _classService = classService;
         }
 
-        [CheckProfessor]
         [HttpPost]
         [Route("addclass")]
-
+        [CheckProfessor]
         public async Task<IActionResult> AddClass([FromBody] AddClassModel model)
         {
 
             try
             {
-
-                await _classService.AddClass(model);
-
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                await _classService.AddClass(model, professorId);
 
                 return Ok(new ResponseModel<string?>
                 {
@@ -69,6 +67,33 @@ namespace ClassNegarService.Controllers
             }
 
         }
+        private string? getUserName()
+        {
+            var claim = HttpContext.User.Claims.Where(x => x.Type == "username").FirstOrDefault();
+            if (claim == null)
+                return null;
+            return claim.Value;
+        }
+
+        private int? getUserId()
+        {
+            int id;
+            var claim = HttpContext.User.Claims.Where(x => x.Type == "user_id").FirstOrDefault();
+            if (claim == null)
+                return null;
+            try
+            {
+                id = int.Parse(claim.Value);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return id;
+        }
+
+
 
     }
 }

@@ -5,7 +5,6 @@ namespace ClassNegarService.Models.Class
     {
         public string Name { get; set; }
         public DateTime Semester { get; set; }
-        public int ProfessorId { get; set; }
         public int MaxSize { get; set; }
         public string ClassLocation { get; set; }
     }

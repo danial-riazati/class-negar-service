@@ -1,16 +1,6 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using ClassNegarService.Models;
-using ClassNegarService.Models.Auth;
-using ClassNegarService.Models.Class;
+﻿using ClassNegarService.Models.Class;
 using ClassNegarService.Repos;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using ClassNegarService.Utils;
 
 namespace ClassNegarService.Services
 {
@@ -28,9 +18,29 @@ namespace ClassNegarService.Services
             _configuration = configuration;
         }
 
-        public Task AddClass(AddClassModel model)
+        public async Task AddClass(AddClassModel model, int professorId)
         {
-            throw new NotImplementedException();
+            var code = GenerateClassCode(model.Name, model.Semester, professorId);
+            var password = StringUtils.RandomString(8);
+            await _classRepo.AddClass(model, code, password, professorId);
+
+        }
+
+
+
+        string GenerateClassCode(string name, DateTime semester, int professorId)
+        {
+            {
+                string inputString = $"{name}{semester.ToString("yyyyMMdd")}{professorId}";
+
+                int hashCode = inputString.GetHashCode();
+
+                hashCode = Math.Abs(hashCode);
+
+                string classCode = hashCode.ToString("D8");
+
+                return classCode;
+            }
         }
     }
 }

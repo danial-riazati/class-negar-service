@@ -8,7 +8,7 @@ namespace ClassNegarService.Services
 {
     public interface IClassService
     {
-        public Task AddClass(AddClassModel model);
+        public Task AddClass(AddClassModel model, int professorId);
     }
 }
 

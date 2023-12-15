@@ -31,6 +31,7 @@
     <None Remove="Repos\Class\" />
     <None Remove="Models\Enums\" />
     <None Remove="Controllers\Attributes\" />
+    <None Remove="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -46,5 +47,6 @@
     <Folder Include="Repos\Class\" />
     <Folder Include="Models\Enums\" />
     <Folder Include="Controllers\Attributes\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
 </Project>
