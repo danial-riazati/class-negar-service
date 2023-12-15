@@ -9,8 +9,12 @@ namespace ClassNegarService.Repos
 {
     public interface IClassRepo
     {
-        public Task AddClass(AddClassModel model, string code, string password, int professorId);
-
+        public Task<int?> AddClass(AddClassModel model, string code, string password, int professorId);
+        public Task AddTimeToClass(List<AddClassTimeModel> model, int classId);
+        public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId);
+        public Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId);
+        public Task<int?> GetClassId(JoinClassModel model);
+        public Task AddEnrollment(int studentId, int classId, DateTime joinedAt);
 
     }
 }

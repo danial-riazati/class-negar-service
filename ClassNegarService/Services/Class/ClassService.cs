@@ -22,31 +22,36 @@ namespace ClassNegarService.Services
         {
             var code = GenerateClassCode(model.Name, model.Semester, professorId);
             var password = StringUtils.RandomString(8);
-            await _classRepo.AddClass(model, code, password, professorId);
-
+            var classId = await _classRepo.AddClass(model, code, password, professorId) ?? throw new Exception();
+            await _classRepo.AddTimeToClass(model.Times, classId);
         }
 
         public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId)
         {
-            throw new NotImplementedException();
+            var result = _classRepo.GetAllProfessorClasses(professorId);
+            return result;
         }
 
         public Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId)
         {
-            throw new NotImplementedException();
+            var result = _classRepo.GetAllStudentClasses(studentId);
+            return result;
+        }
+
+        public async Task JoinClass(JoinClassModel model, int studentId)
+        {
+            var classId = await _classRepo.GetClassId(model) ?? throw new UnauthorizedAccessException();
+            await _classRepo.AddEnrollment(studentId, classId, DateTime.Now);
+
         }
 
         string GenerateClassCode(string name, DateTime semester, int professorId)
         {
             {
                 string inputString = $"{name}{semester.ToString("yyyyMMdd")}{professorId}";
-
                 int hashCode = inputString.GetHashCode();
-
                 hashCode = Math.Abs(hashCode);
-
                 string classCode = hashCode.ToString("D8");
-
                 return classCode;
             }
         }

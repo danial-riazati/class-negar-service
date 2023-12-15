@@ -145,6 +145,43 @@ namespace ClassNegarService.Controllers
             }
 
         }
+        [HttpPost]
+        [Route("joinclass")]
+        [CheckStudent]
+        public async Task<IActionResult> JoinClass([FromBody] JoinClassModel model)
+        {
+
+            try
+            {
+                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
+                await _classService.JoinClass(model, studentId);
+
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
         private string? getUserName()
         {
             var claim = HttpContext.User.Claims.Where(x => x.Type == "username").FirstOrDefault();

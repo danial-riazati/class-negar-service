@@ -11,6 +11,7 @@ namespace ClassNegarService.Services
         public Task AddClass(AddClassModel model, int professorId);
         public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId);
         public Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId);
+        public Task JoinClass(JoinClassModel model, int studentId);
 
     }
 }
