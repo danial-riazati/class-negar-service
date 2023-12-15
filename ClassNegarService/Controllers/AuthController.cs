@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClassNegarService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : Controller
     {
 

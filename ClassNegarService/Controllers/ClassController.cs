@@ -15,7 +15,7 @@ namespace ClassNegarService.Controllers
 {
 
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/class")]
     public class ClassController : Controller
     {
         private readonly IConfiguration _configuration;
