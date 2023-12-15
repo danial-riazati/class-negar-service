@@ -24,6 +24,13 @@
     <None Remove="Services\" />
     <None Remove="Db\" />
     <None Remove="Models\Auth\" />
+    <None Remove="Models\Class\" />
+    <None Remove="Services\Auth\" />
+    <None Remove="Repos\Auth\" />
+    <None Remove="Services\Class\" />
+    <None Remove="Repos\Class\" />
+    <None Remove="Models\Enums\" />
+    <None Remove="Controllers\Attributes\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -32,5 +39,12 @@
     <Folder Include="Services\" />
     <Folder Include="Db\" />
     <Folder Include="Models\Auth\" />
+    <Folder Include="Models\Class\" />
+    <Folder Include="Services\Auth\" />
+    <Folder Include="Repos\Auth\" />
+    <Folder Include="Services\Class\" />
+    <Folder Include="Repos\Class\" />
+    <Folder Include="Models\Enums\" />
+    <Folder Include="Controllers\Attributes\" />
   </ItemGroup>
 </Project>

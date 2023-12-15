@@ -11,7 +11,8 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-
+builder.Services.AddScoped<IClassRepo, ClassRepo>();
+builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IAuthRepo, AuthRepo>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
