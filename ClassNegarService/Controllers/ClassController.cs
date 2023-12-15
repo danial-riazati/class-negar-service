@@ -15,6 +15,7 @@ namespace ClassNegarService.Controllers
 {
 
     [Authorize]
+    [Route("api/[controller]")]
     public class ClassController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -44,6 +45,83 @@ namespace ClassNegarService.Controllers
                 return Ok(new ResponseModel<string?>
                 {
                     Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+
+        [HttpGet]
+        [Route("allprofessorclasses")]
+        [CheckProfessor]
+        public async Task<IActionResult> AllProfessorClasses()
+        {
+
+            try
+            {
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetAllProfessorClasses(professorId);
+
+                return Ok(new ResponseModel<List<ProfessorClassesModel>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpGet]
+        [Route("allstudentclasses")]
+        [CheckStudent]
+        public async Task<IActionResult> AllStudentClasses()
+        {
+
+            try
+            {
+                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetAllStudentClasses(studentId);
+
+                return Ok(new ResponseModel<List<StudentClassesModel>>
+                {
+                    Result = result,
                     Message = "done"
                 });
 

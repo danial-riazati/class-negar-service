@@ -26,7 +26,15 @@ namespace ClassNegarService.Services
 
         }
 
+        public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId)
+        {
+            throw new NotImplementedException();
+        }
 
         string GenerateClassCode(string name, DateTime semester, int professorId)
         {
@@ -42,6 +50,8 @@ namespace ClassNegarService.Services
                 return classCode;
             }
         }
+
+
     }
 }
 
