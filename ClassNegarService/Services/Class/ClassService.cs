@@ -44,9 +44,14 @@ namespace ClassNegarService.Services
             return result ?? throw new UnauthorizedAccessException();
         }
 
-        public Task<List<ClassRecoursesModel>> GetRecources(int studentId, int classId)
+        public async Task<List<ClassRecoursesModel>> GetProfessorRecources(int professorId, int classId)
         {
-            throw new NotImplementedException();
+            var hasAccess = await _classRepo.HasProfessorAccess(professorId, classId);
+            if (hasAccess == false) throw new UnauthorizedAccessException();
+
+            var result = await _classRepo.GetClassRecourses(classId);
+            return result ?? throw new UnauthorizedAccessException();
+
         }
 
         public async Task<StudentClassesModel?> GetStudentClass(int studentId, int classId)
@@ -54,7 +59,16 @@ namespace ClassNegarService.Services
             var hasEnrolled = await _classRepo.HasEnrolled(studentId, classId);
             if (hasEnrolled == false) throw new UnauthorizedAccessException();
 
-            var result = await _classRepo.GetStudentClass(studentId, classId);
+            var result = await _classRepo.GetStudentClass(classId);
+            return result ?? throw new UnauthorizedAccessException();
+        }
+
+        public async Task<List<ClassRecoursesModel>> GetStudentRecources(int studentId, int classId)
+        {
+            var hasAccess = await _classRepo.HasEnrolled(studentId, classId);
+            if (hasAccess == false) throw new UnauthorizedAccessException();
+
+            var result = await _classRepo.GetClassRecourses(classId);
             return result ?? throw new UnauthorizedAccessException();
         }
 

@@ -160,8 +160,16 @@ namespace ClassNegarService.Repos
 
             return hasEnrolled != null ? true : false;
         }
+        public async Task<bool> HasProfessorAccess(int professorId, int classId)
+        {
+            var hasAccess = (from c in _dbcontext.Classes
+                             where c.Id == classId && c.ProfessorId == professorId
+                             select c).FirstOrDefault();
 
-        public async Task<StudentClassesModel?> GetStudentClass(int studentId, int classId)
+            return hasAccess != null ? true : false;
+        }
+
+        public async Task<StudentClassesModel?> GetStudentClass(int classId)
         {
 
 
@@ -193,6 +201,22 @@ namespace ClassNegarService.Repos
 
             result.ClassTimes = classTime;
             return result;
+        }
+
+        public async Task<List<ClassRecoursesModel>> GetClassRecourses(int classId)
+        {
+            var recourses = (from r in _dbcontext.ClassResouces
+                             where r.ClassId == classId
+                             select new ClassRecoursesModel
+                             {
+                                 Id = r.Id,
+                                 DownloadLink = r.DownloadLink,
+                                 Format = r.Format,
+                                 InsertedAt = r.InsertedAt,
+                                 Size = r.Size
+                             }).ToList();
+            return recourses;
+
         }
     }
 }

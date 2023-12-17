@@ -147,14 +147,15 @@ namespace ClassNegarService.Controllers
 
         }
         [HttpGet]
-        [Route("recourses/{classid}")]
-        public async Task<IActionResult> GetRecources(int classid)
+        [Route("studentrecourses/{classid}")]
+        [CheckStudent]
+        public async Task<IActionResult> GetStudentRecources(int classid)
         {
 
             try
             {
                 var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetRecources(studentId, classid);
+                var result = await _classService.GetStudentRecources(studentId, classid);
                 return Ok(new ResponseModel<List<ClassRecoursesModel>>
                 {
                     Result = result,
@@ -181,6 +182,44 @@ namespace ClassNegarService.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("professorrecourses/{classid}")]
+        [CheckProfessor]
+        public async Task<IActionResult> GetProfessorRecources(int classid)
+        {
+
+            try
+            {
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetProfessorRecources(professorId, classid);
+                return Ok(new ResponseModel<List<ClassRecoursesModel>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
 
         [HttpGet]
         [Route("allprofessorclasses")]
@@ -294,6 +333,8 @@ namespace ClassNegarService.Controllers
             }
 
         }
+
+
         private string? getUserName()
         {
             var claim = HttpContext.User.Claims.Where(x => x.Type == "username").FirstOrDefault();
