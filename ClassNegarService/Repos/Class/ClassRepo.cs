@@ -203,11 +203,11 @@ namespace ClassNegarService.Repos
             return result;
         }
 
-        public async Task<List<ClassRecoursesModel>> GetClassRecourses(int classId)
+        public async Task<List<ClassResourseModel>> GetClassResourses(int classId)
         {
-            var recourses = (from r in _dbcontext.ClassResouces
+            var resourses = (from r in _dbcontext.ClassResourses
                              where r.ClassId == classId
-                             select new ClassRecoursesModel
+                             select new ClassResourseModel
                              {
                                  Id = r.Id,
                                  DownloadLink = r.DownloadLink,
@@ -215,8 +215,23 @@ namespace ClassNegarService.Repos
                                  InsertedAt = r.InsertedAt,
                                  Size = r.Size
                              }).ToList();
-            return recourses;
+            return resourses;
 
+        }
+
+        public async Task AddClassResourses(string name, int classId, string downloadLink, DateTime insertedAt, string format, int size)
+        {
+            var resourse = new ClassResourse
+            {
+                DownloadLink = downloadLink,
+                Format = format,
+                InsertedAt = insertedAt,
+                Size = size,
+                ClassId = classId,
+                Name = name
+            };
+            await _dbcontext.AddAsync(resourse);
+            await _dbcontext.SaveChangesAsync();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace ClassNegarService.Models.Class
 {
-    public class ClassRecoursesModel
+    public class ClassResourseModel
     {
         public int Id { get; set; }
         public string DownloadLink { get; set; }

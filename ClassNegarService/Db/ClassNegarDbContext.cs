@@ -16,7 +16,7 @@ namespace ClassNegarService.Db
         public DbSet<User> Users { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<ClassNotification> ClassNotifications { get; set; }
-        public DbSet<ClassResouce> ClassResouces { get; set; }
+        public DbSet<ClassResourse> ClassResourses { get; set; }
         public DbSet<ClassTime> ClassTimes { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<NotificationComment> NotificationComments { get; set; }

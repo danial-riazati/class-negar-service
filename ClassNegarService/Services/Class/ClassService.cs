@@ -1,4 +1,5 @@
-﻿using ClassNegarService.Models.Class;
+﻿using System.Text.RegularExpressions;
+using ClassNegarService.Models.Class;
 using ClassNegarService.Repos;
 using ClassNegarService.Utils;
 
@@ -26,6 +27,32 @@ namespace ClassNegarService.Services
             await _classRepo.AddTimeToClass(model.Times, classId);
         }
 
+        public async Task AddClassResourse(AddClassResourse model, int professorId)
+        {
+            var hasAccess = await _classRepo.HasProfessorAccess(professorId, model.ClassId);
+            if (hasAccess == false) throw new UnauthorizedAccessException();
+
+            if (string.IsNullOrEmpty(model.Base64Data)) throw new InvalidDataException();
+
+            var file = model.Base64Data.Split(',');
+            if (file.Length != 2) throw new InvalidDataException();
+            var fileFormat = GetFileFormat(file[0]);
+            if (fileFormat == null) throw new InvalidDataException();
+            var path = GenerateFilePath(model, fileFormat);
+            var content = Convert.FromBase64String(file[1]);
+            var directoryPath = _configuration["BaseDirectoryPath"] + path;
+            var downloadPath = _configuration["BaseUrlPath"] + path;
+
+            await File.WriteAllBytesAsync(directoryPath, content);
+
+            await _classRepo.AddClassResourses(model.Name, model.ClassId, downloadPath, DateTime.Now, fileFormat, content.Length);
+
+
+
+
+
+        }
+
         public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId)
         {
             var result = _classRepo.GetAllProfessorClasses(professorId);
@@ -44,12 +71,12 @@ namespace ClassNegarService.Services
             return result ?? throw new UnauthorizedAccessException();
         }
 
-        public async Task<List<ClassRecoursesModel>> GetProfessorRecources(int professorId, int classId)
+        public async Task<List<ClassResourseModel>> GetProfessorResources(int professorId, int classId)
         {
             var hasAccess = await _classRepo.HasProfessorAccess(professorId, classId);
             if (hasAccess == false) throw new UnauthorizedAccessException();
 
-            var result = await _classRepo.GetClassRecourses(classId);
+            var result = await _classRepo.GetClassResourses(classId);
             return result ?? throw new UnauthorizedAccessException();
 
         }
@@ -63,12 +90,12 @@ namespace ClassNegarService.Services
             return result ?? throw new UnauthorizedAccessException();
         }
 
-        public async Task<List<ClassRecoursesModel>> GetStudentRecources(int studentId, int classId)
+        public async Task<List<ClassResourseModel>> GetStudentResources(int studentId, int classId)
         {
             var hasAccess = await _classRepo.HasEnrolled(studentId, classId);
             if (hasAccess == false) throw new UnauthorizedAccessException();
 
-            var result = await _classRepo.GetClassRecourses(classId);
+            var result = await _classRepo.GetClassResourses(classId);
             return result ?? throw new UnauthorizedAccessException();
         }
 
@@ -81,15 +108,39 @@ namespace ClassNegarService.Services
 
         string GenerateClassCode(string name, DateTime semester, int professorId)
         {
-            {
-                string inputString = $"{name}{semester.ToString("yyyyMMdd")}{professorId}";
-                int hashCode = inputString.GetHashCode();
-                hashCode = Math.Abs(hashCode);
-                string classCode = hashCode.ToString("D8");
-                return classCode;
-            }
+
+            string inputString = $"{name}{semester.ToString("yyyyMMdd")}{professorId}";
+            int hashCode = inputString.GetHashCode();
+            hashCode = Math.Abs(hashCode);
+            string classCode = hashCode.ToString("D8");
+            return classCode;
+
         }
 
+        string GetFileFormat(string data)
+        {
+            try
+            {
+                Regex rg = new Regex(@"(?<=/)(.*)(?=;)");
+
+                var type = rg.Matches(data)[0];
+                return type.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        string GenerateFilePath(AddClassResourse model, string fileFormat)
+        {
+
+            string filename = StringUtils.RandomString(4) + model.ClassId + model.Name;
+            int hash = filename.GetHashCode();
+            hash = Math.Abs(hash);
+            string pre = hash.ToString("D8").Replace(" ", "");
+            string filePath = pre + "_" + model.ClassId + $".{fileFormat}";
+            return filePath;
+        }
 
     }
 }

@@ -19,10 +19,12 @@ namespace ClassNegarService.Repos
         public Task AddEnrollment(int studentId, int classId, DateTime joinedAt);
         public Task<bool> HasEnrolled(int studentId, int classId);
         public Task<bool> HasProfessorAccess(int professorId, int classId);
-        public Task<List<ClassRecoursesModel>> GetClassRecourses(int classId);
+        public Task<List<ClassResourseModel>> GetClassResourses(int classId);
+        public Task AddClassResourses(string name, int classId, string downloadLink, DateTime insertedAt, string format, int size);
 
 
 
     }
 }
+
 

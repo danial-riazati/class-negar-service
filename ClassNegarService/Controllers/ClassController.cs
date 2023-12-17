@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClassNegarService.Controllers.Attributes;
+﻿using ClassNegarService.Controllers.Attributes;
 using ClassNegarService.Models;
-using ClassNegarService.Models.Auth;
 using ClassNegarService.Models.Class;
-using ClassNegarService.Models.Enums;
 using ClassNegarService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +35,43 @@ namespace ClassNegarService.Controllers
             {
                 var professorId = getUserId() ?? throw new UnauthorizedAccessException();
                 await _classService.AddClass(model, professorId);
+
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpPost]
+        [Route("addresourses")]
+        [CheckProfessor]
+        public async Task<IActionResult> AddResourses([FromBody] AddClassResourse model)
+        {
+
+            try
+            {
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                await _classService.AddClassResourse(model, professorId);
 
                 return Ok(new ResponseModel<string?>
                 {
@@ -147,16 +178,16 @@ namespace ClassNegarService.Controllers
 
         }
         [HttpGet]
-        [Route("studentrecourses/{classid}")]
+        [Route("studentresourses/{classid}")]
         [CheckStudent]
-        public async Task<IActionResult> GetStudentRecources(int classid)
+        public async Task<IActionResult> GetStudentResources(int classid)
         {
 
             try
             {
                 var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetStudentRecources(studentId, classid);
-                return Ok(new ResponseModel<List<ClassRecoursesModel>>
+                var result = await _classService.GetStudentResources(studentId, classid);
+                return Ok(new ResponseModel<List<ClassResourseModel>>
                 {
                     Result = result,
                     Message = "done"
@@ -184,16 +215,16 @@ namespace ClassNegarService.Controllers
         }
 
         [HttpGet]
-        [Route("professorrecourses/{classid}")]
+        [Route("professorresourses/{classid}")]
         [CheckProfessor]
-        public async Task<IActionResult> GetProfessorRecources(int classid)
+        public async Task<IActionResult> GetProfessorResources(int classid)
         {
 
             try
             {
                 var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetProfessorRecources(professorId, classid);
-                return Ok(new ResponseModel<List<ClassRecoursesModel>>
+                var result = await _classService.GetProfessorResources(professorId, classid);
+                return Ok(new ResponseModel<List<ClassResourseModel>>
                 {
                     Result = result,
                     Message = "done"

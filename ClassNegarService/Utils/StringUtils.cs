@@ -20,8 +20,8 @@ namespace ClassNegarService.Utils
                 if (splitted.Length != 2) throw new Exception();
                 var arr = new int[] { int.Parse(splitted[0]), int.Parse(splitted[1]) };
                 if (arr[0] < 0 || arr[0] > 23 || arr[0] < 0 || arr[0] > 60) throw new Exception();
-                time.AddHours(arr[0]);
-                time.AddMinutes(arr[1]);
+                time = time.AddHours(arr[0]);
+                time = time.AddMinutes(arr[1]);
                 return time;
             }
             catch (Exception)
