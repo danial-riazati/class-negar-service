@@ -102,6 +102,8 @@ namespace ClassNegarService.Services
         public async Task JoinClass(JoinClassModel model, int studentId)
         {
             var classId = await _classRepo.GetClassId(model) ?? throw new UnauthorizedAccessException();
+            var hasEnrolledBefore = await _classRepo.HasEnrolled(studentId, classId);
+            if (hasEnrolledBefore) throw new Exception("you are already enrolled to the class");
             await _classRepo.AddEnrollment(studentId, classId, DateTime.Now);
 
         }
