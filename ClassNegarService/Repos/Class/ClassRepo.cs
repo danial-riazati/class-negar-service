@@ -3,6 +3,7 @@ using ClassNegarService.Db;
 using ClassNegarService.Models;
 using ClassNegarService.Models.Auth;
 using ClassNegarService.Models.Class;
+using ClassNegarService.Utils;
 
 namespace ClassNegarService.Repos
 {
@@ -48,7 +49,10 @@ namespace ClassNegarService.Repos
             List<ClassTime> times = new List<ClassTime>();
             model.ForEach((t) =>
             {
-                times.Add(new ClassTime { ClassId = classId, DayOfWeek = t.DayOfWeek, TimeOfDay = t.TimeOfDay });
+                var timeStart = StringUtils.ConvertTimeStrigToDateTime(t.StartAt);
+                var timeEnd = StringUtils.ConvertTimeStrigToDateTime(t.EndAt);
+
+                times.Add(new ClassTime { ClassId = classId, DayOfWeek = t.DayOfWeek, StartAt = timeStart, EndAt = timeEnd });
             });
 
             await _dbcontext.AddRangeAsync(times);
@@ -87,7 +91,7 @@ namespace ClassNegarService.Repos
                           on e.ClassId equals c.Id
                           join p in _dbcontext.Users
                           on c.ProfessorId equals p.Id
-
+                          where e.StudentId == studentId
                           select new StudentClassesModel
                           {
                               Id = c.Id,
@@ -97,8 +101,8 @@ namespace ClassNegarService.Repos
                               ProfessorName = p.FirstName + " " + p.LastName,
                               Semester = c.Semester,
                               IsAttendingNow = c.IsAttendingNow,
-
                           }).ToList();
+
 
             return result;
         }
@@ -111,6 +115,84 @@ namespace ClassNegarService.Repos
             if (result == null)
                 return null;
             return result.Id;
+        }
+
+        public async Task<ProfessorClassesModel?> GetProfessorClass(int professorId, int classId)
+        {
+
+            var result = (from c in _dbcontext.Classes
+                          join u in _dbcontext.Users
+                          on c.ProfessorId equals u.Id
+                          where c.Id == classId && c.ProfessorId == professorId
+                          select new ProfessorClassesModel
+                          {
+                              Id = c.Id,
+                              ClassLocation = c.ClassLocation,
+                              CurrentSize = c.CurrentSize,
+                              IsAttendingNow = c.IsAttendingNow,
+                              ProfessorName = u.FirstName + " " + u.LastName,
+                              Name = c.Name,
+                              Semester = c.Semester,
+                              Code = c.Code,
+                              Passwrod = c.Password,
+                              MaxSize = c.MaxSize,
+                          }
+                          ).FirstOrDefault();
+            if (result == null) return null;
+
+            var classTime = (from ct in _dbcontext.ClassTimes
+                             where ct.ClassId == classId
+                             select new AddClassTimeModel
+                             {
+                                 DayOfWeek = ct.DayOfWeek,
+                                 StartAt = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt),
+                                 EndAt = StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
+                             }).ToList();
+
+            result.ClassTimes = classTime;
+            return result;
+        }
+        public async Task<bool> HasEnrolled(int studentId, int classId)
+        {
+            var hasEnrolled = (from e in _dbcontext.Enrollments
+                               where e.ClassId == classId && e.StudentId == studentId
+                               select e).FirstOrDefault();
+
+            return hasEnrolled != null ? true : false;
+        }
+
+        public async Task<StudentClassesModel?> GetStudentClass(int studentId, int classId)
+        {
+
+
+            var result = (from c in _dbcontext.Classes
+                          join u in _dbcontext.Users
+                          on c.ProfessorId equals u.Id
+                          where c.Id == classId
+                          select new StudentClassesModel
+                          {
+                              Id = c.Id,
+                              ClassLocation = c.ClassLocation,
+                              CurrentSize = c.CurrentSize,
+                              IsAttendingNow = c.IsAttendingNow,
+                              ProfessorName = u.FirstName + " " + u.LastName,
+                              Name = c.Name,
+                              Semester = c.Semester,
+                          }
+                          ).FirstOrDefault();
+            if (result == null) return null;
+
+            var classTime = (from ct in _dbcontext.ClassTimes
+                             where ct.ClassId == classId
+                             select new AddClassTimeModel
+                             {
+                                 DayOfWeek = ct.DayOfWeek,
+                                 StartAt = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt),
+                                 EndAt = StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
+                             }).ToList();
+
+            result.ClassTimes = classTime;
+            return result;
         }
     }
 }

@@ -11,7 +11,9 @@ namespace ClassNegarService.Db
         public int Id { get; set; }
         public int ClassId { get; set; }
         public int DayOfWeek { get; set; }
-        public DateTime TimeOfDay { get; set; }
+        public DateTime StartAt { get; set; }
+        public DateTime EndAt { get; set; }
+
     }
 }
 

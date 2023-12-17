@@ -13,6 +13,8 @@ namespace ClassNegarService.Models.Class
         public int MaxSize { get; set; }
         public string ClassLocation { get; set; }
         public bool IsAttendingNow { get; set; }
+        public List<AddClassTimeModel> ClassTimes { get; set; }
+
     }
 }
 

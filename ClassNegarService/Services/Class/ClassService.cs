@@ -38,6 +38,26 @@ namespace ClassNegarService.Services
             return result;
         }
 
+        public Task<ProfessorClassesModel?> GetProfessorClass(int professorId, int classId)
+        {
+            var result = _classRepo.GetProfessorClass(professorId, classId);
+            return result ?? throw new UnauthorizedAccessException();
+        }
+
+        public Task<List<ClassRecoursesModel>> GetRecources(int studentId, int classId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<StudentClassesModel?> GetStudentClass(int studentId, int classId)
+        {
+            var hasEnrolled = await _classRepo.HasEnrolled(studentId, classId);
+            if (hasEnrolled == false) throw new UnauthorizedAccessException();
+
+            var result = await _classRepo.GetStudentClass(studentId, classId);
+            return result ?? throw new UnauthorizedAccessException();
+        }
+
         public async Task JoinClass(JoinClassModel model, int studentId)
         {
             var classId = await _classRepo.GetClassId(model) ?? throw new UnauthorizedAccessException();

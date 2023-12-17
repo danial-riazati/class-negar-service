@@ -10,6 +10,7 @@ namespace ClassNegarService.Models.Class
         public int CurrentSize { get; set; }
         public string ClassLocation { get; set; }
         public bool IsAttendingNow { get; set; }
+        public List<AddClassTimeModel> ClassTimes { get; set; }
     }
 }
 

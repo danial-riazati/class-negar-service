@@ -71,6 +71,118 @@ namespace ClassNegarService.Controllers
 
 
         [HttpGet]
+        [Route("professorclass/{id}")]
+        [CheckProfessor]
+        public async Task<IActionResult> ProfessorClass(int id)
+        {
+
+            try
+            {
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetProfessorClass(professorId, id);
+                if (result == null) throw new UnauthorizedAccessException();
+
+                return Ok(new ResponseModel<ProfessorClassesModel>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpGet]
+        [Route("studentclass/{id}")]
+        [CheckStudent]
+        public async Task<IActionResult> StudentClass(int id)
+        {
+
+            try
+            {
+                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetStudentClass(studentId, id);
+                if (result == null) throw new UnauthorizedAccessException();
+                return Ok(new ResponseModel<StudentClassesModel>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpGet]
+        [Route("recourses/{classid}")]
+        public async Task<IActionResult> GetRecources(int classid)
+        {
+
+            try
+            {
+                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.GetRecources(studentId, classid);
+                return Ok(new ResponseModel<List<ClassRecoursesModel>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpGet]
         [Route("allprofessorclasses")]
         [CheckProfessor]
         public async Task<IActionResult> AllProfessorClasses()
