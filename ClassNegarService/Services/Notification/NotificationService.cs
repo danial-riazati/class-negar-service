@@ -98,6 +98,24 @@ namespace ClassNegarService.Services.Notification
             //await callFirebaseNotificationService
         }
 
+        public async Task<List<AllNotificationsResultModel>> GetAllNotifications(int userId, int userRole, int classId)
+        {
+
+            if (userRole == (int)RoleEnum.professor)
+            {
+                var hasAccess = await _classRepo.HasProfessorAccess(userId, classId);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+
+            }
+            else if (userRole == (int)RoleEnum.student)
+            {
+                var hasAccess = await _classRepo.HasEnrolled(userId, classId);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+            }
+            var result = await _notificationRepo.GetAllNotifications(classId);
+            return result;
+        }
+
         public async Task<NotificationResultModel> GetNotification(int userId, int userRole, int notificationId)
         {
             var classId = await _notificationRepo.GetNotificationClassId(notificationId);

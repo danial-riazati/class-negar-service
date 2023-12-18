@@ -149,13 +149,32 @@ namespace ClassNegarService.Repos.Notification
             return 0;
         }
 
+        public async Task<List<AllNotificationsResultModel>> GetAllNotifications(int classId)
+        {
+            var result = (from n in _dbcontext.ClassNotifications
+                          join c in _dbcontext.Classes
+                          on n.ClassId equals c.Id
+                          select new AllNotificationsResultModel
+                          {
+                              ClassName = c.Name,
+                              Id = n.Id,
+                              Description = n.Description,
+                              PublishedAt = n.PublishedAt,
+                              Title = n.Title
+
+                          }).ToList();
+            return result;
+        }
+
         public async Task<NotificationResultModel?> GetNotification(int notificationId)
         {
             var result = (from n in _dbcontext.ClassNotifications
+                          join c in _dbcontext.Classes
+                          on n.ClassId equals c.Id
                           where n.Id == notificationId
                           select new NotificationResultModel
                           {
-                              ClassId = n.ClassId,
+                              ClassName = c.Name,
                               Id = n.Id,
                               Description = n.Description,
                               DislikesCount = n.DislikesCount,

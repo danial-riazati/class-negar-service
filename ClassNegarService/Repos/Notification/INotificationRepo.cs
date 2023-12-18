@@ -19,6 +19,6 @@ namespace ClassNegarService.Repos.Notification
         public Task<NotificationResultModel?> GetNotification(int notificationId);
         public Task<List<CommentResultModel>> GetNotificationComments(int notificationId);
         public Task<int> CheckUserLikeStatus(int notificationId, int userId);
-
+        public Task<List<AllNotificationsResultModel>> GetAllNotifications(int classId);
     }
 }

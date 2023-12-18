@@ -14,6 +14,7 @@ namespace ClassNegarService.Services.Notification
         public Task RemoveDislike(int userId, int userRole, int notificationId);
         public Task AddComment(AddCommentModel model, int userId, int userRole);
         public Task<NotificationResultModel> GetNotification(int userId, int userRole, int notificationId);
+        public Task<List<AllNotificationsResultModel>> GetAllNotifications(int userId, int userRole, int classId);
 
     }
 }

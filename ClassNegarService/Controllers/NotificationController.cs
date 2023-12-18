@@ -109,6 +109,46 @@ namespace ClassNegarService.Controllers
         }
 
         [HttpGet]
+        [Route("notifications/{classId}")]
+        public async Task<IActionResult> Notifications(int classId)
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                var result = await _notificationService.GetAllNotifications(userId, userRole, classId);
+
+                return Ok(new ResponseModel<List<AllNotificationsResultModel>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+
+        [HttpGet]
         [Route("notification/{notificationId}")]
         public async Task<IActionResult> Notification(int notificationId)
         {
