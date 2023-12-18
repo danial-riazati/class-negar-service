@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClassNegarService.Controllers
 {
     [Authorize]
-    [Route("api/class")]
+    [Route("api/notification")]
     public class NotificationController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -44,6 +44,85 @@ namespace ClassNegarService.Controllers
                 return Ok(new ResponseModel<string?>
                 {
                     Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpPost]
+        [Route("addcomment")]
+        public async Task<IActionResult> AddComment([FromBody] AddCommentModel model)
+
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                await _notificationService.AddComment(model, userId, userRole);
+
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpGet]
+        [Route("notification/{notificationId}")]
+        public async Task<IActionResult> Notification(int notificationId)
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                var result = await _notificationService.GetNotification(userId, userRole, notificationId);
+
+                return Ok(new ResponseModel<NotificationResultModel>
+                {
+                    Result = result,
                     Message = "done"
                 });
 

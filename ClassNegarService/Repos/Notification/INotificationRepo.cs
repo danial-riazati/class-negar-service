@@ -15,7 +15,10 @@ namespace ClassNegarService.Repos.Notification
         public Task RemoveDislike(int notificationId, int userId);
         public Task UpdateIfHasLike(int notificationId, int userId);
         public Task UpdateIfHasDislike(int notificationId, int userId);
-
+        public Task AddComment(int userId, int notificationId, string description, DateTime publishedAt);
+        public Task<NotificationResultModel?> GetNotification(int notificationId);
+        public Task<List<CommentResultModel>> GetNotificationComments(int notificationId);
+        public Task<int> CheckUserLikeStatus(int notificationId, int userId);
 
     }
 }

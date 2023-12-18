@@ -1,5 +1,6 @@
 ﻿using System;
 using ClassNegarService.Db;
+using ClassNegarService.Models.Notification;
 
 namespace ClassNegarService.Repos.Notification
 {
@@ -10,6 +11,19 @@ namespace ClassNegarService.Repos.Notification
         public NotificationRepo(ClassNegarDbContext dbcontext)
         {
             _dbcontext = dbcontext;
+        }
+
+        public async Task AddComment(int userId, int notificationId, string description, DateTime publishedAt)
+        {
+            var comment = new NotificationComment
+            {
+                NotificationId = notificationId,
+                Description = description,
+                PublishedAt = publishedAt,
+                UserId = userId
+            };
+            await _dbcontext.AddAsync(comment);
+            await _dbcontext.SaveChangesAsync();
         }
 
         public async Task AddDislike(int notificationId, int userId)
@@ -122,6 +136,37 @@ namespace ClassNegarService.Repos.Notification
             await _dbcontext.SaveChangesAsync();
         }
 
+        public async Task<int> CheckUserLikeStatus(int notificationId, int userId)
+        {
+            var isLiked = (from l in _dbcontext.NotificationLikes
+                           where l.UserId == userId && l.NotificationId == notificationId && !l.IsRemoved
+                           select l).FirstOrDefault();
+            if (isLiked != null) return 1;
+            var isDisliked = (from dl in _dbcontext.NotificationDislikes
+                              where dl.UserId == userId && dl.NotificationId == notificationId && !dl.IsRemoved
+                              select dl).FirstOrDefault();
+            if (isDisliked != null) return -1;
+            return 0;
+        }
+
+        public async Task<NotificationResultModel?> GetNotification(int notificationId)
+        {
+            var result = (from n in _dbcontext.ClassNotifications
+                          where n.Id == notificationId
+                          select new NotificationResultModel
+                          {
+                              ClassId = n.ClassId,
+                              Id = n.Id,
+                              Description = n.Description,
+                              DislikesCount = n.DislikesCount,
+                              LikesCount = n.LikesCount,
+                              PublishedAt = n.PublishedAt,
+                              Title = n.Title,
+
+                          }).FirstOrDefault();
+            return result;
+        }
+
         public async Task<int> GetNotificationClassId(int notificationId)
         {
             var classId = (from n in _dbcontext.ClassNotifications
@@ -129,6 +174,24 @@ namespace ClassNegarService.Repos.Notification
                            select n.ClassId).FirstOrDefault();
 
             return classId;
+        }
+
+        public async Task<List<CommentResultModel>> GetNotificationComments(int notificationId)
+        {
+            var result = (from c in _dbcontext.NotificationComments
+                          join u in _dbcontext.Users
+                          on c.UserId equals u.Id
+                          where c.NotificationId == notificationId
+                          select new CommentResultModel
+                          {
+                              Id = c.Id,
+                              NotificationId = notificationId,
+                              Description = c.Description,
+                              Name = u.FirstName + " " + u.LastName,
+                              PublishedAt = c.PublishedAt,
+                          }).ToList();
+
+            return result;
         }
 
         public async Task<List<string>> GetNotificationDislikes(int notificationId)
@@ -210,7 +273,7 @@ namespace ClassNegarService.Repos.Notification
         public async Task UpdateIfHasDislike(int notificationId, int userId)
         {
             var result = (from d in _dbcontext.NotificationDislikes
-                          where d.NotificationId == notificationId && d.UserId == userId
+                          where d.NotificationId == notificationId && d.UserId == userId && !d.IsRemoved
                           select d).FirstOrDefault();
 
             if (result == null) return;
@@ -234,7 +297,7 @@ namespace ClassNegarService.Repos.Notification
         public async Task UpdateIfHasLike(int notificationId, int userId)
         {
             var result = (from d in _dbcontext.NotificationLikes
-                          where d.NotificationId == notificationId && d.UserId == userId
+                          where d.NotificationId == notificationId && d.UserId == userId && !d.IsRemoved
                           select d).FirstOrDefault();
 
             if (result == null) return;
