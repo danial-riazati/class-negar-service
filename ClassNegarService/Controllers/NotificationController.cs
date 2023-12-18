@@ -1,77 +1,45 @@
-﻿using ClassNegarService.Controllers.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ClassNegarService.Controllers.Attributes;
 using ClassNegarService.Models;
-using ClassNegarService.Models.Class;
+using ClassNegarService.Models.Notification;
 using ClassNegarService.Services;
+using ClassNegarService.Services.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace ClassNegarService.Controllers
 {
-
     [Authorize]
     [Route("api/class")]
-    public class ClassController : Controller
+    public class NotificationController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly IClassService _classService;
+        private readonly INotificationService _notificationService;
 
-        public ClassController(
+        public NotificationController(
             IConfiguration configuration,
-            IClassService classService
+            INotificationService notificationService
             )
         {
 
             _configuration = configuration;
-            _classService = classService;
+            _notificationService = notificationService;
         }
 
         [HttpPost]
-        [Route("addclass")]
+        [Route("addnotification")]
         [CheckProfessor]
-        public async Task<IActionResult> AddClass([FromBody] AddClassModel model)
+        public async Task<IActionResult> AddNotification([FromBody] AddNotificationModel model)
         {
 
             try
             {
                 var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                await _classService.AddClass(model, professorId);
-
-                return Ok(new ResponseModel<string?>
-                {
-                    Result = "",
-                    Message = "done"
-                });
-
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-
-        }
-        [HttpPost]
-        [Route("addresourses")]
-        [CheckProfessor]
-        public async Task<IActionResult> AddResourses([FromBody] AddClassResourse model)
-        {
-
-            try
-            {
-                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                await _classService.AddClassResourse(model, professorId);
+                await _notificationService.AddNotification(model, professorId);
 
                 return Ok(new ResponseModel<string?>
                 {
@@ -100,20 +68,19 @@ namespace ClassNegarService.Controllers
 
         }
 
-
         [HttpGet]
-        [Route("professorclass/{id}")]
-        [CheckProfessor]
-        public async Task<IActionResult> ProfessorClass(int id)
+        [Route("notificationlikes/{notificationId}")]
+        public async Task<IActionResult> NotificationLikes(int notificationId)
         {
 
             try
             {
-                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetProfessorClass(professorId, id);
-                if (result == null) throw new UnauthorizedAccessException();
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
 
-                return Ok(new ResponseModel<ProfessorClassesModel>
+                var result = await _notificationService.GetNotificationLikes(userId, userRole, notificationId);
+
+                return Ok(new ResponseModel<List<string>>
                 {
                     Result = result,
                     Message = "done"
@@ -141,167 +108,18 @@ namespace ClassNegarService.Controllers
         }
 
         [HttpGet]
-        [Route("studentclass/{id}")]
-        [CheckStudent]
-        public async Task<IActionResult> StudentClass(int id)
+        [Route("notificationdislikes/{notificationId}")]
+        public async Task<IActionResult> NotificationDislikes(int notificationId)
         {
 
             try
             {
-                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetStudentClass(studentId, id);
-                if (result == null) throw new UnauthorizedAccessException();
-                return Ok(new ResponseModel<StudentClassesModel>
-                {
-                    Result = result,
-                    Message = "done"
-                });
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
 
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-            catch (Exception ex)
-            {
+                var result = await _notificationService.GetNotificationDislikes(userId, userRole, notificationId);
 
-                return BadRequest(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-
-        }
-        [HttpGet]
-        [Route("studentresourses/{classid}")]
-        [CheckStudent]
-        public async Task<IActionResult> GetStudentResources(int classid)
-        {
-
-            try
-            {
-                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetStudentResources(studentId, classid);
-                return Ok(new ResponseModel<List<ClassResourseModel>>
-                {
-                    Result = result,
-                    Message = "done"
-                });
-
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-
-        }
-
-        [HttpGet]
-        [Route("professorresourses/{classid}")]
-        [CheckProfessor]
-        public async Task<IActionResult> GetProfessorResources(int classid)
-        {
-
-            try
-            {
-                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetProfessorResources(professorId, classid);
-                return Ok(new ResponseModel<List<ClassResourseModel>>
-                {
-                    Result = result,
-                    Message = "done"
-                });
-
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-
-        }
-
-
-        [HttpGet]
-        [Route("allprofessorclasses")]
-        [CheckProfessor]
-        public async Task<IActionResult> AllProfessorClasses()
-        {
-
-            try
-            {
-                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetAllProfessorClasses(professorId);
-
-                return Ok(new ResponseModel<List<ProfessorClassesModel>>
-                {
-                    Result = result,
-                    Message = "done"
-                });
-
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new ResponseModel<string>
-                {
-                    Result = "",
-                    Message = ex.Message + ex.InnerException
-                });
-            }
-
-        }
-
-        [HttpGet]
-        [Route("allstudentclasses")]
-        [CheckStudent]
-        public async Task<IActionResult> AllStudentClasses()
-        {
-
-            try
-            {
-                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                var result = await _classService.GetAllStudentClasses(studentId);
-
-                return Ok(new ResponseModel<List<StudentClassesModel>>
+                return Ok(new ResponseModel<List<string>?>
                 {
                     Result = result,
                     Message = "done"
@@ -329,15 +147,16 @@ namespace ClassNegarService.Controllers
         }
 
         [HttpPost]
-        [Route("joinclass")]
-        [CheckStudent]
-        public async Task<IActionResult> JoinClass([FromBody] JoinClassModel model)
+        [Route("addlike/{notificationId}")]
+        public async Task<IActionResult> NotificationLike(int notificationId)
         {
 
             try
             {
-                var studentId = getUserId() ?? throw new UnauthorizedAccessException();
-                await _classService.JoinClass(model, studentId);
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                await _notificationService.AddLike(userId, userRole, notificationId);
 
                 return Ok(new ResponseModel<string?>
                 {
@@ -365,10 +184,120 @@ namespace ClassNegarService.Controllers
             }
 
         }
+        [HttpPost]
+        [Route("adddislike/{notificationId}")]
+        public async Task<IActionResult> NotificationDislike(int notificationId)
+        {
 
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
 
+                await _notificationService.AddDislike(userId, userRole, notificationId);
 
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
 
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpPost]
+        [Route("removelike/{notificationId}")]
+        public async Task<IActionResult> RemoveNotificationLike(int notificationId)
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                await _notificationService.RemoveLike(userId, userRole, notificationId);
+
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpPost]
+        [Route("removedislike/{notificationId}")]
+        public async Task<IActionResult> RemoveNotificationDislike(int notificationId)
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                await _notificationService.RemoveDislike(userId, userRole, notificationId);
+
+                return Ok(new ResponseModel<string?>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
         private string? getUserName()
         {
             var claim = HttpContext.User.Claims.Where(x => x.Type == "username").FirstOrDefault();
@@ -395,8 +324,23 @@ namespace ClassNegarService.Controllers
             return id;
         }
 
+        private int? getUserRole()
+        {
+            int id;
+            var claim = HttpContext.User.Claims.Where(x => x.Type == "role_id").FirstOrDefault();
+            if (claim == null)
+                return null;
+            try
+            {
+                id = int.Parse(claim.Value);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
-
+            return id;
+        }
     }
 }
 

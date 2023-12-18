@@ -32,6 +32,9 @@
     <None Remove="Models\Enums\" />
     <None Remove="Controllers\Attributes\" />
     <None Remove="Utils\" />
+    <None Remove="Models\Notification\" />
+    <None Remove="Services\Notification\" />
+    <None Remove="Repos\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -48,5 +51,8 @@
     <Folder Include="Models\Enums\" />
     <Folder Include="Controllers\Attributes\" />
     <Folder Include="Utils\" />
+    <Folder Include="Models\Notification\" />
+    <Folder Include="Services\Notification\" />
+    <Folder Include="Repos\Notification\" />
   </ItemGroup>
 </Project>

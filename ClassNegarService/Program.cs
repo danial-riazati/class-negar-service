@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using ClassNegarService.Db;
 using ClassNegarService.Repos;
+using ClassNegarService.Repos.Notification;
 using ClassNegarService.Services;
+using ClassNegarService.Services.Notification;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +13,13 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-builder.Services.AddScoped<IClassRepo, ClassRepo>();
-builder.Services.AddScoped<IClassService, ClassService>();
+
 builder.Services.AddScoped<IAuthRepo, AuthRepo>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IClassRepo, ClassRepo>();
+builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddDbContext<ClassNegarDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
 
@@ -78,6 +83,8 @@ builder.Services.AddSwaggerGen(opt =>
 
 
 builder.Services.AddControllers();
+//builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
