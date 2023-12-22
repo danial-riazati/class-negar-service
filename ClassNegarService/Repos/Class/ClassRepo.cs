@@ -140,16 +140,8 @@ namespace ClassNegarService.Repos
                           ).FirstOrDefault();
             if (result == null) return null;
 
-            var classTime = (from ct in _dbcontext.ClassTimes
-                             where ct.ClassId == classId
-                             select new AddClassTimeModel
-                             {
-                                 DayOfWeek = ct.DayOfWeek,
-                                 StartAt = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt),
-                                 EndAt = StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
-                             }).ToList();
 
-            result.ClassTimes = classTime;
+
             return result;
         }
         public async Task<bool> HasEnrolled(int studentId, int classId)
@@ -190,16 +182,7 @@ namespace ClassNegarService.Repos
                           ).FirstOrDefault();
             if (result == null) return null;
 
-            var classTime = (from ct in _dbcontext.ClassTimes
-                             where ct.ClassId == classId
-                             select new AddClassTimeModel
-                             {
-                                 DayOfWeek = ct.DayOfWeek,
-                                 StartAt = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt),
-                                 EndAt = StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
-                             }).ToList();
 
-            result.ClassTimes = classTime;
             return result;
         }
 
@@ -232,6 +215,30 @@ namespace ClassNegarService.Repos
             };
             await _dbcontext.AddAsync(resourse);
             await _dbcontext.SaveChangesAsync();
+        }
+
+        public async Task<bool?> IsRemovedFromClass(int studentId, int classId)
+        {
+            var res = (from e in _dbcontext.Enrollments
+                       where e.ClassId == classId && e.StudentId == studentId
+                       select e).FirstOrDefault();
+            if (res == null) return null;
+            return res.IsRemoved;
+
+
+        }
+
+        public async Task<List<AddClassTimeModel>> GetClassTimes(int classId)
+        {
+            var classTime = (from ct in _dbcontext.ClassTimes
+                             where ct.ClassId == classId
+                             select new AddClassTimeModel
+                             {
+                                 DayOfWeek = ct.DayOfWeek,
+                                 StartAt = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt),
+                                 EndAt = StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
+                             }).ToList();
+            return classTime;
         }
     }
 }

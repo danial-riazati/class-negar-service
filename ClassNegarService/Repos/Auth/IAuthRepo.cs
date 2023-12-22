@@ -11,6 +11,7 @@ namespace ClassNegarService.Repos
         public Task<User?> FindUserByUserName(string username);
         public Task<bool> CheckUserPassword(User user, string password);
         public Task UpdateUser(User user);
+        public Task<bool> CheckFingerPrintIdForAnotherUsers(string fingerprintId, int userId);
 
 
     }

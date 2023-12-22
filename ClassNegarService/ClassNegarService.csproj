@@ -15,6 +15,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +36,11 @@
     <None Remove="Models\Notification\" />
     <None Remove="Services\Notification\" />
     <None Remove="Repos\Notification\" />
+    <None Remove="Services\Session\" />
+    <None Remove="Models\Session\" />
+    <None Remove="Repos\Session\" />
+    <None Remove="Services\WebSocket\" />
+    <None Remove="Models\WebSocket\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -54,5 +60,10 @@
     <Folder Include="Models\Notification\" />
     <Folder Include="Services\Notification\" />
     <Folder Include="Repos\Notification\" />
+    <Folder Include="Services\Session\" />
+    <Folder Include="Models\Session\" />
+    <Folder Include="Repos\Session\" />
+    <Folder Include="Services\WebSocket\" />
+    <Folder Include="Models\WebSocket\" />
   </ItemGroup>
 </Project>

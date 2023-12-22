@@ -21,6 +21,8 @@ namespace ClassNegarService.Repos
         public Task<bool> HasProfessorAccess(int professorId, int classId);
         public Task<List<ClassResourseModel>> GetClassResourses(int classId);
         public Task AddClassResourses(string name, int classId, string downloadLink, DateTime insertedAt, string format, int size);
+        public Task<bool?> IsRemovedFromClass(int studentId, int classId);
+        public Task<List<AddClassTimeModel>> GetClassTimes(int classId);
 
 
 

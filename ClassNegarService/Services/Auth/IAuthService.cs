@@ -10,6 +10,8 @@ namespace ClassNegarService.Services
         public Task<SigninResponseModel?> Signin(SigninModel model);
         public Task<RefreshTokenModel> RefreshToken(TokenModel model);
         public Task Revoke(string username);
+
+
     }
 }
 

@@ -88,7 +88,8 @@ namespace ClassNegarService.Services
             var user = await _authRepo.FindUserByUserName(model.Username);
             if (user != null && await _authRepo.CheckUserPassword(user, model.Password))
             {
-
+                var checkFingerPrint = await CheckFingerPrint(model.FingerprintId, user.Id);
+                if (!checkFingerPrint) throw new InvalidDataException();
                 var authClaims = new List<Claim>
                 {
                     new Claim("user_id",user.Id.ToString() as string),
@@ -105,7 +106,8 @@ namespace ClassNegarService.Services
 
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
-
+                user.LastLogin = DateTime.Now;
+                user.FingerPrintId = model.FingerprintId;
                 await _authRepo.UpdateUser(user);
 
 
@@ -120,7 +122,14 @@ namespace ClassNegarService.Services
             return null;
         }
 
+        private async Task<bool> CheckFingerPrint(string fingerprintId, int myUserId)
+        {
+            if (string.IsNullOrEmpty(fingerprintId))
+                return false;
 
+            var res = await _authRepo.CheckFingerPrintIdForAnotherUsers(fingerprintId, myUserId);
+            return res;
+        }
 
         private JwtSecurityToken CreateToken(List<Claim> authClaims)
         {

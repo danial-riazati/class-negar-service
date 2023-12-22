@@ -53,22 +53,23 @@ namespace ClassNegarService.Services
 
         }
 
-        public Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId)
+        public async Task<List<ProfessorClassesModel>> GetAllProfessorClasses(int professorId)
         {
-            var result = _classRepo.GetAllProfessorClasses(professorId);
+            var result = await _classRepo.GetAllProfessorClasses(professorId);
             return result;
         }
 
-        public Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId)
+        public async Task<List<StudentClassesModel>> GetAllStudentClasses(int studentId)
         {
-            var result = _classRepo.GetAllStudentClasses(studentId);
+            var result = await _classRepo.GetAllStudentClasses(studentId);
             return result;
         }
 
-        public Task<ProfessorClassesModel?> GetProfessorClass(int professorId, int classId)
+        public async Task<ProfessorClassesModel?> GetProfessorClass(int professorId, int classId)
         {
-            var result = _classRepo.GetProfessorClass(professorId, classId);
-            return result ?? throw new UnauthorizedAccessException();
+            var result = await _classRepo.GetProfessorClass(professorId, classId) ?? throw new UnauthorizedAccessException();
+            result.ClassTimes = await _classRepo.GetClassTimes(classId);
+            return result;
         }
 
         public async Task<List<ClassResourseModel>> GetProfessorResources(int professorId, int classId)
@@ -86,8 +87,9 @@ namespace ClassNegarService.Services
             var hasEnrolled = await _classRepo.HasEnrolled(studentId, classId);
             if (hasEnrolled == false) throw new UnauthorizedAccessException();
 
-            var result = await _classRepo.GetStudentClass(classId);
-            return result ?? throw new UnauthorizedAccessException();
+            var result = await _classRepo.GetStudentClass(classId) ?? throw new UnauthorizedAccessException();
+            result.ClassTimes = await _classRepo.GetClassTimes(classId);
+            return result;
         }
 
         public async Task<List<ClassResourseModel>> GetStudentResources(int studentId, int classId)

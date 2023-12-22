@@ -49,6 +49,14 @@ namespace ClassNegarService.Controllers
                 });
 
             }
+            catch (InvalidDataException)
+            {
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = "you are not valid login with this device for 1 hour"
+                });
+            }
             catch (Exception ex)
             {
 
