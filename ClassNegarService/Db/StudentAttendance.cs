@@ -9,7 +9,7 @@ namespace ClassNegarService.Db
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int EnrollmentId { get; set; }
+        public int SessionId { get; set; }
         public int UserId { get; set; }
         public DateTime? JoinedAt { get; set; }
         public DateTime? QuitedAt { get; set; }

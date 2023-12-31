@@ -49,14 +49,7 @@ namespace ClassNegarService.Services.Session
                 var isRemoved = await _classRepo.IsRemovedFromClass(userId, classId) ?? throw new UnauthorizedAccessException();
                 if (isRemoved == true) throw new UnauthorizedAccessException();
             }
-            //if (isLogin && await _sessionRepo.IsAlreadyLoggedIn(classId, userId))
-            //{
-            //    throw new Exception("you are");
-            //}
-            //else
-            //{
-            //    await _sessionRepo.IsAlreadyLoggedOut(classId, userId);
-            //}
+
 
             var classTimes = await _classRepo.GetClassTimes(classId);
             bool isValidTime = false;
@@ -98,6 +91,9 @@ namespace ClassNegarService.Services.Session
             {
                 decrypted = EncryptionUtils.DecryptString(qrcode, _configuration["AESKEY"]);
                 model = JsonConvert.DeserializeObject<SessionDataModel>(decrypted) ?? throw new UnauthorizedAccessException();
+                if (model.ExpireAt < DateTime.Now)
+                    throw new UnauthorizedAccessException();
+
             }
             catch (Exception)
             {
@@ -114,26 +110,77 @@ namespace ClassNegarService.Services.Session
                 var hasAccess = await _classRepo.HasEnrolled(model.UserId, model.ClassId);
                 if (hasAccess == false) throw new UnauthorizedAccessException();
                 var isRemoved = await _classRepo.IsRemovedFromClass(model.UserId, model.ClassId) ?? throw new UnauthorizedAccessException();
-                if (isRemoved == true) throw new UnauthorizedAccessException();
+                if (isRemoved == true)
+                {
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.removedFromClass).ToString(), model.UserId);
+                    return;
+                }
             }
-            var currentSessionId = await _sessionRepo.FindSessionForNow(model.ClassId)
-                                ?? await _sessionRepo.CreateSession(model.ClassId)
-                                ?? throw new InvalidDataException();
+
+
 
             if (model.UserRole == (int)RoleEnum.professor)
             {
-                await _sessionRepo.AddProfessorAttendance(currentSessionId, model.UserId);
+                if (model.IsLogin)
+                {
+                    var sessionId = await _sessionRepo.FindSessionForNow(model.ClassId);
+                    if (sessionId != null && sessionId != 0)
+                    {
+                        await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.alreadyLoggedIn).ToString(), model.UserId);
+                        return;
+                    }
+                    sessionId = await _sessionRepo.CreateSession(model.ClassId) ?? throw new InvalidDataException();
+                    await _sessionRepo.AddProfessorAttendance((int)sessionId, model.UserId);
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
 
+                }
+                else
+                {
+                    var sessionId = await _sessionRepo.FindSessionForNow(model.ClassId);
+                    if (sessionId == null || sessionId == 0)
+                    {
+                        await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.alreadyLoggedOutOrNotLoggedIn).ToString(), model.UserId);
+                        return;
+                    }
+                    await _sessionRepo.EndSession((int)sessionId);
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
 
+                }
             }
             else if (model.UserRole == (int)RoleEnum.student)
             {
-                await _sessionRepo.AddStudentAttendance(currentSessionId, model.UserId);
+                var sessionId = await _sessionRepo.FindSessionForNow(model.ClassId);
+                if (sessionId == null || sessionId == 0)
+                {
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.IsNotCreated).ToString(), model.UserId);
+                    return;
+                }
+                if (model.IsLogin)
+                {
+                    var isAlreayLoggedIn = await _sessionRepo.IsStudentAlreadyLoggedIn((int)sessionId, model.UserId);
+                    if (isAlreayLoggedIn)
+                    {
+                        await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.alreadyLoggedIn).ToString(), model.UserId);
+                        return;
+                    }
+                    await _sessionRepo.AddStudentAttendance((int)sessionId, model.UserId);
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
+
+                }
+                else
+                {
+                    var isAlreadyLoggedOutOrNotLoggedIn = await _sessionRepo.IsStudentAlreadyLoggedOutOrNotLoggedIn((int)sessionId, model.UserId);
+                    if (isAlreadyLoggedOutOrNotLoggedIn)
+                    {
+                        await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.alreadyLoggedOutOrNotLoggedIn).ToString(), model.UserId);
+                        return;
+                    }
+                    await _sessionRepo.AddStudentExit((int)sessionId, model.UserId);
+                    await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
+
+                }
 
             }
-
-            await _webSocketService.SendToSocketAsync(" ", model.UserId);
-
         }
     }
 }

@@ -4,6 +4,7 @@ using ClassNegarService.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassNegarService.Migrations
 {
     [DbContext(typeof(ClassNegarDbContext))]
-    partial class ClassNegarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231231161632_dbclassadded11")]
+    partial class dbclassadded11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
