@@ -2,9 +2,11 @@
 using ClassNegarService.Db;
 using ClassNegarService.Repos;
 using ClassNegarService.Repos.Notification;
+using ClassNegarService.Repos.Report;
 using ClassNegarService.Repos.Session;
 using ClassNegarService.Services;
 using ClassNegarService.Services.Notification;
+using ClassNegarService.Services.Report;
 using ClassNegarService.Services.Session;
 using ClassNegarService.Services.WebSocket;
 using ClassNegarService.Utils;
@@ -27,6 +29,8 @@ builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<ISessionRepo, SessionRepo>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
 builder.Services.AddDbContext<ClassNegarDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
 

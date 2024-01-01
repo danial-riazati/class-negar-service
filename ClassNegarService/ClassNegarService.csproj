@@ -41,6 +41,9 @@
     <None Remove="Repos\Session\" />
     <None Remove="Services\WebSocket\" />
     <None Remove="Models\WebSocket\" />
+    <None Remove="Services\Report\" />
+    <None Remove="Repos\Report\" />
+    <None Remove="Models\Report\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -65,5 +68,8 @@
     <Folder Include="Repos\Session\" />
     <Folder Include="Services\WebSocket\" />
     <Folder Include="Models\WebSocket\" />
+    <Folder Include="Services\Report\" />
+    <Folder Include="Repos\Report\" />
+    <Folder Include="Models\Report\" />
   </ItemGroup>
 </Project>
