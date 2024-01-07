@@ -31,6 +31,44 @@ namespace ClassNegarService.Controllers
             _configuration = configuration;
             _sessionService = sessionService;
         }
+        [HttpGet]
+        [Route("sessionclass")]
+        public async Task<IActionResult> GetSessionClass()
+        {
+
+            try
+            {
+                var userId = getUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = getUserRole() ?? throw new UnauthorizedAccessException();
+
+                var result = await _sessionService.GetSessionClass(userId, userRole);
+
+                return Ok(new ResponseModel<List<SessionClass>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
 
         [HttpGet]
         [Route("sessionqr/{classId}/{isLogin}")]
@@ -53,7 +91,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -89,7 +127,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException

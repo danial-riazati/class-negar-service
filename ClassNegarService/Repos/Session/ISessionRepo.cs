@@ -1,5 +1,6 @@
 ﻿using System;
 using ClassNegarService.Models.Notification;
+using ClassNegarService.Models.Session;
 
 namespace ClassNegarService.Repos.Session
 {
@@ -16,6 +17,10 @@ namespace ClassNegarService.Repos.Session
         public Task<bool> IsStudentAlreadyLoggedOutOrNotLoggedIn(int sessionId, int userId);
         public Task EndSession(int sessionId);
         public Task AddStudentExit(int sessionId, int studentId);
+        public Task<List<SessionClass>> GetStudentSessionClass(int studentId);
+        public Task<List<SessionClass>> GetProfessorSessionClass(int professorId);
+
+
 
     }
 }

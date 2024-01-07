@@ -8,6 +8,7 @@ namespace ClassNegarService.Services.Session
     {
         public Task<SessionQrResultModel> GetSessionQr(int classId, int userId, int userRole, bool isLogin);
         public Task JoinSession(string qrcode);
+        public Task<List<SessionClass>> GetSessionClass(int userId, int userRole);
 
 
     }

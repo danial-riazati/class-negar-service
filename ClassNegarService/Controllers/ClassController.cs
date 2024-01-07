@@ -45,7 +45,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -82,7 +82,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -122,7 +122,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -160,7 +160,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -196,7 +196,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -233,7 +233,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -272,7 +272,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -310,7 +310,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException
@@ -348,7 +348,7 @@ namespace ClassNegarService.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new ResponseModel<string>
+                return NotFound(new ResponseModel<string>
                 {
                     Result = "",
                     Message = ex.Message + ex.InnerException

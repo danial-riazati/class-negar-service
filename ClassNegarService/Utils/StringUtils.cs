@@ -33,7 +33,7 @@ namespace ClassNegarService.Utils
         {
             try
             {
-                var timeString = $"{time.Hour}:{time.Minute}";
+                var timeString = (time.Hour == 0 ? "00" : time.Hour) + ":" + (time.Minute == 0 ? "00" : time.Minute);
                 return timeString;
             }
             catch (Exception)

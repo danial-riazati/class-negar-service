@@ -1,6 +1,10 @@
 ﻿namespace ClassNegarService.Repos.Session
 {
+    using System.Collections.Generic;
     using ClassNegarService.Db;
+    using ClassNegarService.Models.Session;
+    using ClassNegarService.Utils;
+
     public class SessionRepo : ISessionRepo
     {
         private readonly ClassNegarDbContext _dbcontext;
@@ -79,6 +83,62 @@
             return res;
         }
 
+        public Task<List<SessionClass>> GetProfessorSessionClass(int professorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<SessionClass>> GetStudentSessionClass(int studentId)
+        {
+            var classes = (from c in _dbcontext.Classes
+                           join e in _dbcontext.Enrollments
+                           on c.Id equals e.ClassId
+                           where e.StudentId == studentId
+                           select c
+                           );
+            var classTimes = (from c in classes
+                              join ct in _dbcontext.ClassTimes
+                              on c.Id equals ct.ClassId
+                              group new { ct.DayOfWeek, ct.StartAt, ct.EndAt } by ct.ClassId into g
+                              select new { Id = g.Key, Times = g.ToList() }
+                              );
+
+            List<SessionClass> list = new List<SessionClass>();
+            Dictionary<int, string> week = new Dictionary<int, string>
+            {
+                { 0,"یکشنبه" },
+                     { 1,"دوشنبه" },
+                  { 2,"سه‌شنبه" },
+                   { 3,"چهارشنبه" },
+                    { 4,"پنجشنبه" },
+                     { 5,"جمعه" },
+                      { 6,"شنبه" },
+            };
+
+            foreach (var ct in classTimes)
+            {
+
+                var start = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].StartAt);
+                var end = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].EndAt);
+                string time = start + " - " + end;
+                string days = "";
+                foreach (var t in ct.Times)
+                {
+                    days += week[t.DayOfWeek] + "-";
+                }
+                days = days.Remove(days.Length - 1);
+                list.Add(new SessionClass { Time = time, Day = days, Id = ct.Id });
+            }
+            var final = (from l in list
+                         join c in classes
+                         on l.Id equals c.Id
+                         select new SessionClass { Id = l.Id, Name = c.Name, Day = l.Day, Time = l.Time }).ToList();
+
+
+            return final ?? throw new UnauthorizedAccessException();
+
+        }
+
         public async Task<bool> IsStudentAlreadyLoggedIn(int sessionId, int userId)
         {
             var attendance = (from sa in _dbcontext.StudentAttendances
@@ -98,17 +158,6 @@
                 return false;
             return true;
         }
-
-
-        //public async Task<bool> IsProfessorAlreadyLoggedOutOrNotLoggedIn(int sessionId, int userId)
-        //{
-        //    var attendance = (from sa in _dbcontext.ProfessorAttendances
-        //                      where sa.SessionId == sessionId && sa.UserId == userId
-        //                      select sa).FirstOrDefault();
-        //    if (attendance == null || attendance.QuitedAt != null)
-        //        return true;
-        //    return false;
-        //}
     }
 }
 

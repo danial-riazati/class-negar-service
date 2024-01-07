@@ -1,4 +1,5 @@
 ﻿using System;
+using ClassNegarService.Db;
 using ClassNegarService.Models.Enums;
 using ClassNegarService.Models.Notification;
 using ClassNegarService.Repos;
@@ -114,6 +115,22 @@ namespace ClassNegarService.Services.Notification
             }
             var result = await _notificationRepo.GetAllNotifications(classId);
             return result;
+        }
+
+        public async Task<List<AllNotificationsResultModel>> GetAllNotifications(int userId, int userRole)
+        {
+            if (userRole == (int)RoleEnum.professor)
+            {
+                var result = await _notificationRepo.GetAllProfessorNotifications(userId);
+                return result;
+
+            }
+            else if (userRole == (int)RoleEnum.student)
+            {
+                var result = await _notificationRepo.GetAllStudentNotifications(userId);
+                return result;
+            }
+            return null;
         }
 
         public async Task<NotificationResultModel> GetNotification(int userId, int userRole, int notificationId)

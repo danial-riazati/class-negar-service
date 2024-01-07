@@ -52,6 +52,7 @@ namespace ClassNegarService.Services
                     new Claim("user_id",user.Id.ToString() as string),
                     new Claim("username", user.UserName as string),
                     new Claim("role_id",user.RoleId.ToString() as string),
+                    new Claim("name",user.FirstName +" "+ user.LastName as string),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
                 };
@@ -95,6 +96,7 @@ namespace ClassNegarService.Services
                     new Claim("user_id",user.Id.ToString() as string),
                     new Claim("username", user.UserName as string),
                     new Claim("role_id",user.RoleId.ToString() as string),
+                                        new Claim("name",user.FirstName +" "+ user.LastName as string),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 

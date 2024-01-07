@@ -33,6 +33,21 @@ namespace ClassNegarService.Services.Session
             _webSocketService = webSocketService;
         }
 
+        public Task<List<SessionClass>> GetSessionClass(int userId, int userRole)
+        {
+            if (userRole == (int)RoleEnum.professor)
+            {
+                var res = _sessionRepo.GetProfessorSessionClass(userId);
+                return res;
+            }
+            else if (userRole == (int)RoleEnum.student)
+            {
+                var res = _sessionRepo.GetStudentSessionClass(userId);
+                return res;
+            }
+            return null;
+        }
+
         public async Task<SessionQrResultModel> GetSessionQr(int classId, int userId, int userRole, bool isLogin)
         {
 

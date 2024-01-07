@@ -166,6 +166,44 @@ namespace ClassNegarService.Repos.Notification
             return result;
         }
 
+        public async Task<List<AllNotificationsResultModel>> GetAllProfessorNotifications(int userId)
+        {
+            var result = (from n in _dbcontext.ClassNotifications
+                          join c in _dbcontext.Classes
+                          on n.ClassId equals c.Id
+                          where c.ProfessorId == userId
+                          select new AllNotificationsResultModel
+                          {
+                              ClassName = c.Name,
+                              Id = n.Id,
+                              Description = n.Description,
+                              PublishedAt = n.PublishedAt,
+                              Title = n.Title
+
+                          }).ToList();
+            return result;
+        }
+
+        public async Task<List<AllNotificationsResultModel>> GetAllStudentNotifications(int userId)
+        {
+            var result = (from n in _dbcontext.ClassNotifications
+                          join en in _dbcontext.Enrollments
+                          on n.ClassId equals en.ClassId
+                          join c in _dbcontext.Classes
+                          on n.ClassId equals c.Id
+                          where en.StudentId == userId
+                          select new AllNotificationsResultModel
+                          {
+                              ClassName = c.Name,
+                              Id = n.Id,
+                              Description = n.Description,
+                              PublishedAt = n.PublishedAt,
+                              Title = n.Title
+
+                          }).ToList();
+            return result;
+        }
+
         public async Task<NotificationResultModel?> GetNotification(int notificationId)
         {
             var result = (from n in _dbcontext.ClassNotifications
