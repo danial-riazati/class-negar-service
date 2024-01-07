@@ -67,20 +67,20 @@ namespace ClassNegarService.Services.Session
 
 
             var classTimes = await _classRepo.GetClassTimes(classId);
-            bool isValidTime = false;
-            var now = TimeOnly.FromDateTime(DateTime.Now);
-            classTimes.ForEach(c =>
-            {
-                if (c.DayOfWeek == (int)DateTime.Now.DayOfWeek)
-                {
-                    var startAt = TimeOnly.FromDateTime(StringUtils.ConvertTimeStrigToDateTime(c.StartAt));
-                    var endAt = TimeOnly.FromDateTime(StringUtils.ConvertTimeStrigToDateTime(c.EndAt));
-                    if (now > startAt && now < endAt)
-                        isValidTime = true;
-                }
+            //bool isValidTime = false;
+            //var now = TimeOnly.FromDateTime(DateTime.Now);
+            //classTimes.ForEach(c =>
+            //{
+            //    if (c.DayOfWeek == (int)DateTime.Now.DayOfWeek)
+            //    {
+            //        var startAt = TimeOnly.FromDateTime(StringUtils.ConvertTimeStrigToDateTime(c.StartAt));
+            //        var endAt = TimeOnly.FromDateTime(StringUtils.ConvertTimeStrigToDateTime(c.EndAt));
+            //        if (now > startAt && now < endAt)
+            //            isValidTime = true;
+            //    }
 
-            });
-            if (!isValidTime) throw new UnauthorizedAccessException();
+            //});
+            //if (!isValidTime) throw new InvalidTimeZoneException();
             var expDate = DateTime.Now.AddSeconds(20);
             var model = new SessionDataModel
             {
