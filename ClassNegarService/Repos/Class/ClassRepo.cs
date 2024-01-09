@@ -41,7 +41,14 @@ namespace ClassNegarService.Repos
         {
             var enrollment = new Enrollment { ClassId = classId, JoinedAt = joinedAt, IsRemoved = false, StudentId = studentId };
             await _dbcontext.AddAsync(enrollment);
+            var theClass = (from c in _dbcontext.Classes
+                            where c.Id == classId
+                            select c).FirstOrDefault() ?? throw new UnauthorizedAccessException();
+            theClass.CurrentSize += 1;
+            _dbcontext.Update(theClass);
+
             await _dbcontext.SaveChangesAsync();
+
         }
 
         public async Task AddTimeToClass(List<AddClassTimeModel> model, int classId)
@@ -196,7 +203,8 @@ namespace ClassNegarService.Repos
                                  DownloadLink = r.DownloadLink,
                                  Format = r.Format,
                                  InsertedAt = r.InsertedAt,
-                                 Size = r.Size
+                                 Size = r.Size,
+                                 Name = r.Name
                              }).ToList();
             return resourses;
 

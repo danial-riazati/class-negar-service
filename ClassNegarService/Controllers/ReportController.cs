@@ -25,7 +25,7 @@ namespace ClassNegarService.Controllers
 
         [HttpGet]
         [Route("classattendance/{classid}")]
-        public async Task<IActionResult> GetClassAttendance(int studentid, int classid)
+        public async Task<IActionResult> GetClassAttendance(int classid)
         {
 
             try

@@ -21,8 +21,8 @@
                               join s in _dbcontext.Sessions
                               on pa.SessionId equals s.Id
                               where s.ClassId == classId && pa.UserId == userId
-                              select pa.JoinedAt ?? DateTime.MinValue).ToList();
-            var res = new ClassAttendanceResultModel { Attendance = attendance };
+                              select s.StartedAt).ToList();
+            var res = new ClassAttendanceResultModel { Attendance = attendance, Absence = new List<DateTime>() };
             return res;
 
         }
@@ -35,14 +35,15 @@
             if (professorId == 0)
                 throw new UnauthorizedAccessException();
 
-            var attendance = (from pa in _dbcontext.StudentAttendances
+            var attendance = (from sa in _dbcontext.StudentAttendances
                               join s in _dbcontext.Sessions
-                              on pa.SessionId equals s.Id
-                              where s.ClassId == classId && pa.UserId == userId
-                              select pa.JoinedAt ?? DateTime.MinValue).ToList();
+                              on sa.SessionId equals s.Id
+                              where s.ClassId == classId && sa.UserId == userId
+                              select s.StartedAt).ToList();
 
             var allSessions = await GetProfessorClassAttendance(classId, professorId);
-            var res = new ClassAttendanceResultModel { Attendance = attendance, Absence = allSessions.Absence.Except(attendance).ToList() };
+            var absensce = allSessions.Attendance.Except(attendance).ToList();
+            var res = new ClassAttendanceResultModel { Attendance = attendance, Absence = absensce };
             return res;
         }
     }

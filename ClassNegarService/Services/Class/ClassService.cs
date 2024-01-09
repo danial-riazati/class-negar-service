@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ClassNegarService.Models.Class;
 using ClassNegarService.Repos;
+using ClassNegarService.Repos.Notification;
 using ClassNegarService.Utils;
 
 namespace ClassNegarService.Services
@@ -8,14 +9,17 @@ namespace ClassNegarService.Services
     public class ClassService : IClassService
     {
         private readonly IClassRepo _classRepo;
+        private readonly INotificationRepo _notificationRepo;
         private readonly IConfiguration _configuration;
 
         public ClassService(
             IClassRepo classRepo,
+            INotificationRepo notificationRepo,
             IConfiguration configuration
             )
         {
             _classRepo = classRepo;
+            _notificationRepo = notificationRepo;
             _configuration = configuration;
         }
 
@@ -89,6 +93,7 @@ namespace ClassNegarService.Services
 
             var result = await _classRepo.GetStudentClass(classId) ?? throw new UnauthorizedAccessException();
             result.ClassTimes = await _classRepo.GetClassTimes(classId);
+            result.Notifications = await _notificationRepo.GetClassNotifications(classId);
             return result;
         }
 

@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Deadline Service", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Class Negar Service", Version = "v1" });
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

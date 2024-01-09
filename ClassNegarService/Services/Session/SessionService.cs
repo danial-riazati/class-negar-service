@@ -157,6 +157,7 @@ namespace ClassNegarService.Services.Session
                         await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.alreadyLoggedOutOrNotLoggedIn).ToString(), model.UserId);
                         return;
                     }
+                    await _sessionRepo.AddProfessorExit((int)sessionId, model.UserId);
                     await _sessionRepo.EndSession((int)sessionId);
                     await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
 
