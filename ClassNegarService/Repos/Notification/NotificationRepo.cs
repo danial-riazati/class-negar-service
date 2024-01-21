@@ -257,6 +257,7 @@ namespace ClassNegarService.Repos.Notification
                           join u in _dbcontext.Users
                           on c.UserId equals u.Id
                           where c.NotificationId == notificationId
+                          orderby c.PublishedAt
                           select new CommentResultModel
                           {
                               Id = c.Id,

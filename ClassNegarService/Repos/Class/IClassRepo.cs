@@ -23,7 +23,7 @@ namespace ClassNegarService.Repos
         public Task AddClassResourses(string name, int classId, string downloadLink, DateTime insertedAt, string format, int size);
         public Task<bool?> IsRemovedFromClass(int studentId, int classId);
         public Task<List<AddClassTimeModel>> GetClassTimes(int classId);
-
+        public Task UpdateAttendingStatus(bool isAttending, int classId);
 
 
     }

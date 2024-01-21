@@ -248,6 +248,19 @@ namespace ClassNegarService.Repos
                              }).ToList();
             return classTime;
         }
+
+        public async Task UpdateAttendingStatus(bool isAttending, int classId)
+        {
+            var theclass = (from c in _dbcontext.Classes
+                            where c.Id == classId
+                            select c).FirstOrDefault();
+            if (theclass == null)
+                return;
+
+            theclass.IsAttendingNow = isAttending;
+            _dbcontext.Update(theclass);
+            await _dbcontext.SaveChangesAsync();
+        }
     }
 }
 

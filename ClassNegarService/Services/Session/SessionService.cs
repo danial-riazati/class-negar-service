@@ -147,6 +147,7 @@ namespace ClassNegarService.Services.Session
                     sessionId = await _sessionRepo.CreateSession(model.ClassId) ?? throw new InvalidDataException();
                     await _sessionRepo.AddProfessorAttendance((int)sessionId, model.UserId);
                     await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
+                    await _classRepo.UpdateAttendingStatus(true, model.ClassId);
 
                 }
                 else
@@ -160,6 +161,8 @@ namespace ClassNegarService.Services.Session
                     await _sessionRepo.AddProfessorExit((int)sessionId, model.UserId);
                     await _sessionRepo.EndSession((int)sessionId);
                     await _webSocketService.SendToSocketAsync(((int)WebSocketSessionResultEnum.done).ToString(), model.UserId);
+                    await _classRepo.UpdateAttendingStatus(false, model.ClassId);
+
 
                 }
             }
