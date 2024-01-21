@@ -23,12 +23,13 @@ namespace ClassNegarService.Services
             _configuration = configuration;
         }
 
-        public async Task AddClass(AddClassModel model, int professorId)
+        public async Task<AddClassResponseModel> AddClass(AddClassModel model, int professorId)
         {
             var code = GenerateClassCode(model.Name, model.Semester, professorId);
             var password = StringUtils.RandomString(8);
             var classId = await _classRepo.AddClass(model, code, password, professorId) ?? throw new Exception();
             await _classRepo.AddTimeToClass(model.Times, classId);
+            return new AddClassResponseModel { Code = code, Password = password };
         }
 
         public async Task AddClassResourse(AddClassResourse model, int professorId)

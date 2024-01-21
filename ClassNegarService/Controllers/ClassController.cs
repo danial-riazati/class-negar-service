@@ -34,11 +34,11 @@ namespace ClassNegarService.Controllers
             try
             {
                 var professorId = getUserId() ?? throw new UnauthorizedAccessException();
-                await _classService.AddClass(model, professorId);
+                var res = await _classService.AddClass(model, professorId);
 
-                return Ok(new ResponseModel<string?>
+                return Ok(new ResponseModel<AddClassResponseModel?>
                 {
-                    Result = "",
+                    Result = res,
                     Message = "done"
                 });
 

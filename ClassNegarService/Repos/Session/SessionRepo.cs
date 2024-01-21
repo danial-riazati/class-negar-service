@@ -83,9 +83,52 @@
             return res;
         }
 
-        public Task<List<SessionClass>> GetProfessorSessionClass(int professorId)
+        public async Task<List<SessionClass>> GetProfessorSessionClass(int professorId)
         {
-            throw new NotImplementedException();
+            var classes = (from c in _dbcontext.Classes
+                           where c.ProfessorId == professorId
+                           select c
+                                     );
+            var classTimes = (from c in classes
+                              join ct in _dbcontext.ClassTimes
+                              on c.Id equals ct.ClassId
+                              group new { ct.DayOfWeek, ct.StartAt, ct.EndAt } by ct.ClassId into g
+                              select new { Id = g.Key, Times = g.ToList() }
+                              );
+
+            List<SessionClass> list = new List<SessionClass>();
+            Dictionary<int, string> week = new Dictionary<int, string>
+            {
+                { 0,"یکشنبه" },
+                     { 1,"دوشنبه" },
+                  { 2,"سه‌شنبه" },
+                   { 3,"چهارشنبه" },
+                    { 4,"پنجشنبه" },
+                     { 5,"جمعه" },
+                      { 6,"شنبه" },
+            };
+
+            foreach (var ct in classTimes)
+            {
+
+                var start = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].StartAt);
+                var end = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].EndAt);
+                string time = start + " - " + end;
+                string days = "";
+                foreach (var t in ct.Times)
+                {
+                    days += week[t.DayOfWeek] + "-";
+                }
+                days = days.Remove(days.Length - 1);
+                list.Add(new SessionClass { Time = time, Day = days, Id = ct.Id });
+            }
+            var final = (from l in list
+                         join c in classes
+                         on l.Id equals c.Id
+                         select new SessionClass { Id = l.Id, Name = c.Name, Day = l.Day, Time = l.Time }).ToList();
+
+
+            return final ?? throw new UnauthorizedAccessException();
         }
 
         public async Task<List<SessionClass>> GetStudentSessionClass(int studentId)

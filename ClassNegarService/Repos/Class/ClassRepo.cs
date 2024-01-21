@@ -72,6 +72,7 @@ namespace ClassNegarService.Repos
                           join p in _dbcontext.Users
                           on c.ProfessorId equals p.Id
                           where c.ProfessorId == professorId
+                          orderby c.Semester descending
                           select new ProfessorClassesModel
                           {
                               Id = c.Id,
@@ -99,6 +100,7 @@ namespace ClassNegarService.Repos
                           join p in _dbcontext.Users
                           on c.ProfessorId equals p.Id
                           where e.StudentId == studentId
+                          orderby c.Semester descending
                           select new StudentClassesModel
                           {
                               Id = c.Id,
