@@ -98,6 +98,77 @@ namespace ClassNegarService.Services.Session
             return res;
         }
 
+        public async Task JoinRfid(int classid, string rfid)
+        {
+            var user = await _sessionRepo.GetUserOfRfid(rfid) ?? throw new UnauthorizedAccessException();
+            if (user.RoleId == (int)RoleEnum.professor)
+            {
+                var hasAccess = await _classRepo.HasProfessorAccess(user.Id, classid);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+
+            }
+            else if (user.RoleId == (int)RoleEnum.student)
+            {
+                var hasAccess = await _classRepo.HasEnrolled(user.Id, classid);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+                var isRemoved = await _classRepo.IsRemovedFromClass(user.Id, classid) ?? throw new UnauthorizedAccessException();
+                if (isRemoved == true)
+                {
+                    return;
+                }
+            }
+
+
+            if (user.RoleId == (int)RoleEnum.professor)
+            {
+
+                var sessionId = await _sessionRepo.FindSessionForNow(classid);
+                if (sessionId != null && sessionId != 0)
+                {
+                    await _sessionRepo.AddProfessorExit((int)sessionId, user.Id);
+                    await _sessionRepo.EndSession((int)sessionId);
+                    await _classRepo.UpdateAttendingStatus(false, classid);
+                    return;
+                }
+                else
+                {
+                    sessionId = await _sessionRepo.CreateSession(classid) ?? throw new InvalidDataException();
+                    await _sessionRepo.AddProfessorAttendance((int)sessionId, user.Id);
+                    await _classRepo.UpdateAttendingStatus(true, classid);
+                    return;
+                }
+            }
+
+
+            else if (user.RoleId == (int)RoleEnum.student)
+            {
+                var sessionId = await _sessionRepo.FindSessionForNow(classid);
+                if (sessionId == null || sessionId == 0)
+                {
+                    return;
+                }
+
+                var isAlreayLoggedIn = await _sessionRepo.IsStudentAlreadyLoggedIn((int)sessionId, user.Id);
+                if (isAlreayLoggedIn)
+                {
+                    var isAlreadyLoggedOutOrNotLoggedIn = await _sessionRepo.IsStudentAlreadyLoggedOutOrNotLoggedIn((int)sessionId, user.Id);
+                    if (isAlreadyLoggedOutOrNotLoggedIn)
+                    {
+                        return;
+                    }
+                    await _sessionRepo.AddStudentExit((int)sessionId, user.Id);
+                    return;
+                }
+                else
+                {
+                    await _sessionRepo.AddStudentAttendance((int)sessionId, user.Id);
+                    return;
+                }
+
+
+            }
+        }
+
         public async Task JoinSession(string qrcode)
         {
             var decrypted = "";

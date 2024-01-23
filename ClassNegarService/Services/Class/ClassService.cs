@@ -2,22 +2,27 @@
 using ClassNegarService.Models.Class;
 using ClassNegarService.Repos;
 using ClassNegarService.Repos.Notification;
+using ClassNegarService.Repos.Session;
 using ClassNegarService.Utils;
 
 namespace ClassNegarService.Services
 {
     public class ClassService : IClassService
     {
+        private readonly ISessionRepo _sessionRepo;
         private readonly IClassRepo _classRepo;
         private readonly INotificationRepo _notificationRepo;
         private readonly IConfiguration _configuration;
 
         public ClassService(
             IClassRepo classRepo,
+                        ISessionRepo sessionRepo,
+
             INotificationRepo notificationRepo,
             IConfiguration configuration
             )
         {
+            _sessionRepo = sessionRepo;
             _classRepo = classRepo;
             _notificationRepo = notificationRepo;
             _configuration = configuration;
@@ -74,6 +79,7 @@ namespace ClassNegarService.Services
         {
             var result = await _classRepo.GetProfessorClass(professorId, classId) ?? throw new UnauthorizedAccessException();
             result.ClassTimes = await _classRepo.GetClassTimes(classId);
+            result.Notifications = await _notificationRepo.GetClassNotifications(classId);
             return result;
         }
 
@@ -152,6 +158,27 @@ namespace ClassNegarService.Services
             return filePath;
         }
 
+        public async Task<List<string>> TodayClassPresent(int professorId, int classId)
+        {
+            var hasAccess = await _classRepo.HasProfessorAccess(professorId, classId);
+            if (hasAccess == false) throw new UnauthorizedAccessException();
+            var now = DateTime.Now;
+            var latestSession = await _sessionRepo.GetLatestSessionDate(classId);
+            if (latestSession == null)
+            {
+                throw new InvalidDataException();
+
+            }
+            var sessionDate = latestSession.StartedAt;
+            if (sessionDate.Year != now.Year || sessionDate.Month != now.Month || sessionDate.Day != now.Day)
+            {
+                throw new InvalidDataException();
+            }
+            var listresult = await _sessionRepo.GetSessionPresent(latestSession.Id);
+
+            return listresult;
+
+        }
     }
 }
 

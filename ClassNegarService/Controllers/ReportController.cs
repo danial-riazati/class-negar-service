@@ -62,6 +62,82 @@ namespace ClassNegarService.Controllers
 
         }
 
+        [HttpGet]
+        [Route("professorclassattendance/{classid}")]
+        public async Task<IActionResult> GetProfessorClassAttendance(int classid)
+        {
+
+            try
+            {
+                var userId = GetUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = GetUserRole() ?? throw new UnauthorizedAccessException();
+
+                var result = await _reportService.GetProfessorClassAttendance(classid, userId, userRole);
+
+                return Ok(new ResponseModel<List<ProfessorClassAttendanceResultModel>?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpGet]
+        [Route("professorclassanalysis/{classid}")]
+        public async Task<IActionResult> GetProfessorClassAnalysis(int classid)
+        {
+
+            try
+            {
+                var userId = GetUserId() ?? throw new UnauthorizedAccessException();
+                var userRole = GetUserRole() ?? throw new UnauthorizedAccessException();
+
+                var result = await _reportService.GetProfessorClassAnalysis(classid, userId, userRole);
+
+                return Ok(new ResponseModel<ProfessorClassAnalysisResultModel?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
 
         private int? GetUserId()
         {

@@ -83,6 +83,16 @@
             return res;
         }
 
+        public async Task<Session> GetLatestSessionDate(int classId)
+        {
+            var res = (from s in _dbcontext.Sessions
+                       where s.ClassId == classId
+                       orderby s.StartedAt
+                       select s
+                       ).FirstOrDefault();
+            return res;
+        }
+
         public async Task<List<SessionClass>> GetProfessorSessionClass(int professorId)
         {
             var classes = (from c in _dbcontext.Classes
@@ -129,6 +139,19 @@
 
 
             return final ?? throw new UnauthorizedAccessException();
+        }
+
+        public async Task<List<string>> GetSessionPresent(int sessionId)
+        {
+            var res = (from s in _dbcontext.StudentAttendances
+                       join u in _dbcontext.Users
+                        on s.UserId equals u.Id
+                       where s.SessionId == sessionId
+                       select u.FirstName + " " + u.LastName).ToList();
+
+            return res;
+
+
         }
 
         public async Task<List<SessionClass>> GetStudentSessionClass(int studentId)
@@ -180,6 +203,14 @@
 
             return final ?? throw new UnauthorizedAccessException();
 
+        }
+
+        public async Task<User?> GetUserOfRfid(string rfid)
+        {
+            var user = (from u in _dbcontext.Users
+                        where u.RfidTag == rfid
+                        select u).FirstOrDefault();
+            return user;
         }
 
         public async Task<bool> IsStudentAlreadyLoggedIn(int sessionId, int userId)

@@ -1,7 +1,7 @@
 ﻿using System;
 using ClassNegarService.Models.Notification;
+using ClassNegarService.Db;
 using ClassNegarService.Models.Session;
-
 namespace ClassNegarService.Repos.Session
 {
     public interface ISessionRepo
@@ -19,8 +19,9 @@ namespace ClassNegarService.Repos.Session
         public Task AddStudentExit(int sessionId, int studentId);
         public Task<List<SessionClass>> GetStudentSessionClass(int studentId);
         public Task<List<SessionClass>> GetProfessorSessionClass(int professorId);
-
-
+        public Task<Db.Session> GetLatestSessionDate(int classId);
+        public Task<List<string>> GetSessionPresent(int sessionId);
+        public Task<User?> GetUserOfRfid(string rfid);
 
     }
 }

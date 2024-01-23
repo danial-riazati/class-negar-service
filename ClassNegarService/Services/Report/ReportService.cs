@@ -28,12 +28,7 @@ namespace ClassNegarService.Services.Report
         {
             if (userRole == (int)RoleEnum.professor)
             {
-                var hasAccess = await _classRepo.HasProfessorAccess(userId, classId);
-                if (hasAccess == false) throw new UnauthorizedAccessException();
-
-                var res = await _reportRepo.GetProfessorClassAttendance(classId, userId);
-                return res;
-
+                throw new UnauthorizedAccessException();
             }
             else if (userRole == (int)RoleEnum.student)
             {
@@ -42,6 +37,42 @@ namespace ClassNegarService.Services.Report
 
                 var res = await _reportRepo.GetStudentClassAttendance(classId, userId);
                 return res;
+            }
+            return null;
+        }
+
+        public async Task<ProfessorClassAnalysisResultModel?> GetProfessorClassAnalysis(int classId, int userId, int userRole)
+        {
+            if (userRole == (int)RoleEnum.professor)
+            {
+                var hasAccess = await _classRepo.HasProfessorAccess(userId, classId);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+                var result = await _reportRepo.GetProfessorClassAnalysis(classId);
+                return result;
+
+            }
+            else if (userRole == (int)RoleEnum.student)
+            {
+                throw new UnauthorizedAccessException();
+
+            }
+            return null;
+        }
+
+        public async Task<List<ProfessorClassAttendanceResultModel>?> GetProfessorClassAttendance(int classId, int userId, int userRole)
+        {
+            if (userRole == (int)RoleEnum.professor)
+            {
+                var hasAccess = await _classRepo.HasProfessorAccess(userId, classId);
+                if (hasAccess == false) throw new UnauthorizedAccessException();
+                var students = await _reportRepo.GetStudentsClassAttendance(classId);
+                return students;
+
+            }
+            else if (userRole == (int)RoleEnum.student)
+            {
+                throw new UnauthorizedAccessException();
+
             }
             return null;
         }

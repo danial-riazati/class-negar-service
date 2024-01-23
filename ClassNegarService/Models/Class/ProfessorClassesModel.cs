@@ -1,4 +1,6 @@
 ﻿using System;
+using ClassNegarService.Models.Notification;
+
 namespace ClassNegarService.Models.Class
 {
     public class ProfessorClassesModel
@@ -14,6 +16,7 @@ namespace ClassNegarService.Models.Class
         public string ClassLocation { get; set; }
         public bool IsAttendingNow { get; set; }
         public List<AddClassTimeModel> ClassTimes { get; set; }
+        public List<AllNotificationsResultModel> Notifications { get; set; }
 
     }
 }

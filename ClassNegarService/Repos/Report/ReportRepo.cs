@@ -14,6 +14,37 @@
             _dbcontext = dbcontext;
         }
 
+        public async Task<ProfessorClassAnalysisResultModel> GetProfessorClassAnalysis(int classId)
+        {
+            var enrollmentCount = (from e in _dbcontext.Enrollments
+                                   where e.ClassId == classId
+                                   select e).Count();
+
+            var sessions = (from s in _dbcontext.Sessions
+                            where s.ClassId == classId
+                            orderby s.StartedAt descending
+                            select s).ToList();
+            var result = new ProfessorClassAnalysisResultModel { ClassSessions = sessions.Count, ClassAttendance = new List<int>() };
+            int total = 0;
+            foreach (var s in sessions)
+            {
+                var sessionAttendance = (from a in _dbcontext.StudentAttendances
+                                         where a.SessionId == s.Id
+                                         select a).Count();
+                var inpercent = (sessionAttendance * 100) / enrollmentCount;
+                result.ClassAttendance.Add(inpercent);
+                total += inpercent;
+
+            }
+            result.ClassAttendance.AddRange(Enumerable.Repeat(0, 10 - result.ClassAttendance.Count % 10));
+            if (result.ClassSessions == 0)
+                result.MediumOfClassAttendance = 0;
+            else
+                result.MediumOfClassAttendance = total / result.ClassSessions;
+            return result;
+
+        }
+
         public async Task<ClassAttendanceResultModel> GetProfessorClassAttendance(int classId, int userId)
         {
 
@@ -45,6 +76,23 @@
             var absensce = allSessions.Attendance.Except(attendance).ToList();
             var res = new ClassAttendanceResultModel { Attendance = attendance, Absence = absensce };
             return res;
+        }
+
+        public async Task<List<ProfessorClassAttendanceResultModel>> GetStudentsClassAttendance(int classId)
+        {
+            var students = (from s in _dbcontext.Enrollments
+                            join ss in _dbcontext.Users
+                            on s.StudentId equals ss.Id
+                            where s.ClassId == classId
+                            select ss).ToList();
+            var result = new List<ProfessorClassAttendanceResultModel>();
+            foreach (var s in students)
+            {
+                result.Add(new ProfessorClassAttendanceResultModel { Attendance = await GetStudentClassAttendance(classId, s.Id), StudentName = s.FirstName + " " + s.LastName });
+            }
+
+            return result;
+
         }
     }
 }

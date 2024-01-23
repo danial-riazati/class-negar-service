@@ -140,6 +140,52 @@ namespace ClassNegarService.Controllers
 
         }
 
+
+        [HttpGet]
+        [Route("todayclasspresent/{classid}")]
+        [CheckProfessor]
+        public async Task<IActionResult> TodayClassPresent(int classid)
+        {
+            try
+            {
+                var professorId = getUserId() ?? throw new UnauthorizedAccessException();
+                var result = await _classService.TodayClassPresent(professorId, classid);
+                if (result == null) throw new UnauthorizedAccessException();
+
+                return Ok(new ResponseModel<List<string>>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (InvalidDataException)
+            {
+                return Problem();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+
+
+
         [HttpGet]
         [Route("studentclass/{id}")]
         [CheckStudent]

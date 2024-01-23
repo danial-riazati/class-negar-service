@@ -7,6 +7,8 @@ namespace ClassNegarService.Repos.Report
     {
         public Task<ClassAttendanceResultModel> GetProfessorClassAttendance(int classId, int userId);
         public Task<ClassAttendanceResultModel> GetStudentClassAttendance(int classId, int userId);
+        public Task<List<ProfessorClassAttendanceResultModel>> GetStudentsClassAttendance(int classId);
+        public Task<ProfessorClassAnalysisResultModel> GetProfessorClassAnalysis(int classId);
 
     }
 }

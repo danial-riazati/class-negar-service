@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClassNegarService.Controllers
 {
-    [Authorize]
     [Route("api/session")]
     public class SessionController : Controller
     {
@@ -31,6 +30,7 @@ namespace ClassNegarService.Controllers
             _configuration = configuration;
             _sessionService = sessionService;
         }
+        [Authorize]
         [HttpGet]
         [Route("sessionclass")]
         public async Task<IActionResult> GetSessionClass()
@@ -69,7 +69,7 @@ namespace ClassNegarService.Controllers
             }
 
         }
-
+        [Authorize]
         [HttpGet]
         [Route("sessionqr/{classId}/{isLogin}")]
         public async Task<IActionResult> GetSessionQr(int classId, bool isLogin)
@@ -144,7 +144,41 @@ namespace ClassNegarService.Controllers
             }
 
         }
+        [HttpPost]
+        [Route("joinrfid/{classid}/{rfid}")]
+        public async Task<IActionResult> JoinRfid(int classid, string rfid)
+        {
 
+            try
+            {
+                await _sessionService.JoinRfid(classid, rfid);
+
+                return Ok(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
         private int? getUserId()
         {
             int id;

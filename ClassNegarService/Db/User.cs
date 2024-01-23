@@ -18,6 +18,7 @@ namespace ClassNegarService.Db
         public string? LastName { get; set; }
         public DateTime? LastLogin { get; set; }
         public string FingerPrintId { get; set; }
+        public string RfidTag { get; set; }
 
 
     }
