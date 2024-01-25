@@ -22,7 +22,7 @@
 
             var sessions = (from s in _dbcontext.Sessions
                             where s.ClassId == classId
-                            orderby s.StartedAt descending
+                            orderby s.StartedAt
                             select s).ToList();
             var result = new ProfessorClassAnalysisResultModel { ClassSessions = sessions.Count, ClassAttendance = new List<int>() };
             int total = 0;

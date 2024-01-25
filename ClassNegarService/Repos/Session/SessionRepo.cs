@@ -87,7 +87,7 @@
         {
             var res = (from s in _dbcontext.Sessions
                        where s.ClassId == classId
-                       orderby s.StartedAt
+                       orderby s.StartedAt descending
                        select s
                        ).FirstOrDefault();
             return res;
@@ -229,8 +229,8 @@
                               where sa.SessionId == sessionId && sa.UserId == userId
                               select sa).FirstOrDefault();
             if (attendance == null || attendance.QuitedAt != null)
-                return false;
-            return true;
+                return true;
+            return false;
         }
     }
 }

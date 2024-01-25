@@ -24,6 +24,12 @@ namespace ClassNegarService.Repos
         public Task<bool?> IsRemovedFromClass(int studentId, int classId);
         public Task<List<AddClassTimeModel>> GetClassTimes(int classId);
         public Task UpdateAttendingStatus(bool isAttending, int classId);
+        public Task<List<AdminClassModel>> GetAllCurrentClasses();
+        public Task<List<AdminClassModel>> GetAllDoneClasses();
+        public Task<List<AdminClassCalendarModel>> GetAdminClassCalendar();
+        public Task<List<AdminReportClassModel>> GetAllAdminReportClasses();
+
+
 
 
     }

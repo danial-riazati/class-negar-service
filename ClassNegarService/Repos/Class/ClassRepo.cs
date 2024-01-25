@@ -3,6 +3,7 @@ using ClassNegarService.Db;
 using ClassNegarService.Models;
 using ClassNegarService.Models.Auth;
 using ClassNegarService.Models.Class;
+using ClassNegarService.Models.Session;
 using ClassNegarService.Utils;
 
 namespace ClassNegarService.Repos
@@ -263,6 +264,165 @@ namespace ClassNegarService.Repos
             _dbcontext.Update(theclass);
             await _dbcontext.SaveChangesAsync();
         }
+
+        public async Task<List<AdminClassModel>> GetAllCurrentClasses()
+        {
+            var classes = (from c in _dbcontext.Classes
+                           join u in _dbcontext.Users
+                           on c.ProfessorId equals u.Id
+                           where c.IsAttendingNow == true
+                           select new AdminClassModel
+                           {
+                               Id = c.Id,
+                               Name = c.Name,
+                               ClassLocation = c.ClassLocation,
+                               ProfessorName = u.FirstName + " " + u.LastName
+                           }).ToList();
+            var result = GetclassTimeAddedAdminClassModel(classes);
+
+            return result;
+        }
+
+        public async Task<List<AdminClassModel>> GetAllDoneClasses()
+        {
+            var now = DateTime.Now;
+            var classes = (from s in _dbcontext.Sessions
+                           join c in _dbcontext.Classes
+                           on s.ClassId equals c.Id
+                           join u in _dbcontext.Users
+                           on c.ProfessorId equals u.Id
+                           where s.StartedAt.Year == now.Year && s.StartedAt.Month == now.Month
+                           && s.StartedAt.Day == now.Day && s.EndedAt != null
+                           orderby s.StartedAt descending
+                           select new AdminClassModel
+                           {
+                               Id = c.Id,
+                               Name = c.Name,
+                               ClassLocation = c.ClassLocation,
+                               ProfessorName = u.FirstName + " " + u.LastName
+                           }).ToList();
+            var result = GetclassTimeAddedAdminClassModel(classes);
+
+            return result;
+        }
+
+        private List<AdminClassModel> GetclassTimeAddedAdminClassModel(List<AdminClassModel> classes)
+        {
+            var classTimes = (from c in classes
+                              join ct in _dbcontext.ClassTimes
+                              on c.Id equals ct.ClassId
+                              group new { ct.DayOfWeek, ct.StartAt, ct.EndAt } by ct.ClassId into g
+                              select new { Id = g.Key, Times = g.ToList() }
+                           );
+
+            List<SessionClass> list = new List<SessionClass>();
+            Dictionary<int, string> week = new Dictionary<int, string>
+            {
+                { 0,"یکشنبه" },
+                     { 1,"دوشنبه" },
+                  { 2,"سه‌شنبه" },
+                   { 3,"چهارشنبه" },
+                    { 4,"پنجشنبه" },
+                     { 5,"جمعه" },
+                      { 6,"شنبه" },
+            };
+
+            foreach (var ct in classTimes)
+            {
+
+                var start = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].StartAt);
+                var end = StringUtils.ConvertDateTimeToTimeStrig(ct.Times[0].EndAt);
+                string time = start + " - " + end;
+                string days = "";
+                foreach (var t in ct.Times)
+                {
+                    days += week[t.DayOfWeek] + "/";
+                }
+                days = days.Remove(days.Length - 1);
+                list.Add(new SessionClass { Time = time, Day = days, Id = ct.Id });
+            }
+            var final = (from l in list
+                         join c in classes
+                         on l.Id equals c.Id
+                         select new AdminClassModel
+                         {
+                             Id = c.Id,
+                             Name = c.Name,
+                             ClassLocation = c.ClassLocation,
+                             ClassTime = $"({l.Time}){l.Day}",
+                             ProfessorName = c.ProfessorName
+                         }).ToList();
+            return final;
+        }
+
+        public async Task<List<AdminClassCalendarModel>> GetAdminClassCalendar()
+        {
+            Dictionary<int, string> week = new Dictionary<int, string>
+            {
+                { 0,"یکشنبه" },
+                     { 1,"دوشنبه" },
+                  { 2,"سه‌شنبه" },
+                   { 3,"چهارشنبه" },
+                    { 4,"پنجشنبه" },
+                     { 5,"جمعه" },
+                      { 6,"شنبه" },
+            };
+            var res = new List<AdminClassCalendarModel>();
+            res.Add(new AdminClassCalendarModel
+            {
+                DayOfWeek = "شنبه",
+                Classes = GetCalendarOfDay(6)
+            });
+            for (int i = 0; i < 6; i++)
+            {
+                res.Add(new AdminClassCalendarModel
+                {
+                    DayOfWeek = week[i],
+                    Classes = GetCalendarOfDay(i)
+                });
+            }
+            return res;
+        }
+        private List<AdminClassCalendarItemModel> GetCalendarOfDay(int dayNum)
+        {
+            //  var today = (int)DateTime.Now.DayOfWeek;
+            var res = (from ct in _dbcontext.ClassTimes
+                       join c in _dbcontext.Classes
+                       on ct.ClassId equals c.Id
+                       join u in _dbcontext.Users
+                       on c.ProfessorId equals u.Id
+                       where ct.DayOfWeek == dayNum
+                       orderby ct.StartAt
+                       select new AdminClassCalendarItemModel
+                       {
+                           ClassLocation = c.ClassLocation,
+                           IsAttendingNow = c.IsAttendingNow,
+                           Name = c.Name,
+                           ProfessorName = u.FirstName + " " + u.LastName,
+                           ClassTime = StringUtils.ConvertDateTimeToTimeStrig(ct.StartAt)
+                           + " - " +
+                           StringUtils.ConvertDateTimeToTimeStrig(ct.EndAt)
+                       }).ToList();
+            return res;
+        }
+
+        public async Task<List<AdminReportClassModel>> GetAllAdminReportClasses()
+        {
+            var classes = (from c in _dbcontext.Classes
+                           join u in _dbcontext.Users
+                           on c.ProfessorId equals u.Id
+                           orderby c.Semester descending
+                           select new AdminReportClassModel
+                           {
+                               Id = c.Id,
+                               Name = c.Name,
+                               Semester = c.Semester,
+                               ProfessorName = u.FirstName + " " + u.LastName
+                           }).ToList();
+            return classes;
+        }
     }
+
+
 }
 

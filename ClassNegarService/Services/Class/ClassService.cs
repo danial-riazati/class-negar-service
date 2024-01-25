@@ -179,6 +179,30 @@ namespace ClassNegarService.Services
             return listresult;
 
         }
+
+        public async Task<List<AdminClassModel>?> GetAllAdminCurrentClasses()
+        {
+            var result = await _classRepo.GetAllCurrentClasses();
+            return result;
+        }
+
+        public async Task<List<AdminClassModel>?> GetAllAdminDoneClasses()
+        {
+            var result = await _classRepo.GetAllDoneClasses();
+            return result;
+        }
+
+        public async Task<List<AdminClassCalendarModel>?> GetAdminClassCalendar()
+        {
+            var result = await _classRepo.GetAdminClassCalendar();
+            return result;
+        }
+
+        public async Task<List<AdminReportClassModel>?> GetAllAdminReportClasses()
+        {
+            var result = await _classRepo.GetAllAdminReportClasses();
+            return result;
+        }
     }
 }
 

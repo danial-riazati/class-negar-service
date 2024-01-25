@@ -374,6 +374,116 @@ namespace ClassNegarService.Controllers
 
         }
 
+        [HttpGet]
+        [Route("alladmincurrentclasses")]
+        [CheckAdmin]
+        public async Task<IActionResult> AllAdminCurrentClasses()
+        {
+
+            try
+            {
+                var result = await _classService.GetAllAdminCurrentClasses();
+
+                return Ok(new ResponseModel<List<AdminClassModel>?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+        [HttpGet]
+        [Route("alladmindoneclasses")]
+        [CheckAdmin]
+        public async Task<IActionResult> AllAdminDoneClasses()
+        {
+
+            try
+            {
+                var result = await _classService.GetAllAdminDoneClasses();
+
+                return Ok(new ResponseModel<List<AdminClassModel>?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+        [HttpGet]
+        [Route("adminclasscalendar")]
+        [CheckAdmin]
+        public async Task<IActionResult> GetAdminClassCalendar()
+        {
+
+            try
+            {
+                var result = await _classService.GetAdminClassCalendar();
+
+                return Ok(new ResponseModel<List<AdminClassCalendarModel>?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
         [HttpPost]
         [Route("joinclass")]
         [CheckStudent]
@@ -388,6 +498,44 @@ namespace ClassNegarService.Controllers
                 return Ok(new ResponseModel<string?>
                 {
                     Result = "",
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+
+        [HttpGet]
+        [Route("alladminreportclasses")]
+        [CheckAdmin]
+        public async Task<IActionResult> AllAdminReportClasses()
+        {
+
+            try
+            {
+                var result = await _classService.GetAllAdminReportClasses();
+
+                return Ok(new ResponseModel<List<AdminReportClassModel>?>
+                {
+                    Result = result,
                     Message = "done"
                 });
 

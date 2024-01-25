@@ -18,8 +18,10 @@ namespace ClassNegarService.Services
         public Task<List<ClassResourseModel>> GetProfessorResources(int professorId, int classId);
         public Task JoinClass(JoinClassModel model, int studentId);
         public Task<List<string>> TodayClassPresent(int professorId, int classId);
-
-
+        public Task<List<AdminClassModel>?> GetAllAdminCurrentClasses();
+        public Task<List<AdminClassModel>?> GetAllAdminDoneClasses();
+        public Task<List<AdminClassCalendarModel>?> GetAdminClassCalendar();
+        public Task<List<AdminReportClassModel>?> GetAllAdminReportClasses();
 
     }
 
