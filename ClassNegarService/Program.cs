@@ -117,7 +117,7 @@ app.UseCors(x => x
 
 app.UseWebSockets();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -125,16 +125,17 @@ app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path == "/ws")
+    if (context.Request.Path.ToString().StartsWith("/ws"))
     {
         if (context.WebSockets.IsWebSocketRequest)
         {
             try
             {
-                var token = context.Request.Headers["Authorization"];
+                var token = context.Request.QueryString.Value;
+                ; token = token.Replace("?token=", "");
                 var validateObj = new TokenValidateUtils(configuration);
                 var claims = validateObj.ValidateToken(token)!.Claims;
-                var claim = context.User.Claims.Where(x => x.Type == "user_id").FirstOrDefault();
+                var claim = claims.Where(x => x.Type == "user_id").FirstOrDefault();
                 if (claim == null) throw new UnauthorizedAccessException();
                 var userId = int.Parse(claim.Value);
                 var wsService = context.RequestServices.GetRequiredService<WebSocketService>();

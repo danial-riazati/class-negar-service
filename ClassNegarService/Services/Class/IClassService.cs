@@ -1,4 +1,5 @@
 ﻿using System;
+using ClassNegarService.Db;
 using ClassNegarService.Models;
 using ClassNegarService.Models.Auth;
 using ClassNegarService.Models.Class;
@@ -22,8 +23,10 @@ namespace ClassNegarService.Services
         public Task<List<AdminClassModel>?> GetAllAdminDoneClasses();
         public Task<List<AdminClassCalendarModel>?> GetAdminClassCalendar();
         public Task<List<AdminReportClassModel>?> GetAllAdminReportClasses();
+        public Task<AdminClassDetailsModel?> GetAdminClassDetails(int classId);
 
     }
+
 
 }
 

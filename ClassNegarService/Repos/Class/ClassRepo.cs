@@ -3,6 +3,7 @@ using ClassNegarService.Db;
 using ClassNegarService.Models;
 using ClassNegarService.Models.Auth;
 using ClassNegarService.Models.Class;
+using ClassNegarService.Models.Report;
 using ClassNegarService.Models.Session;
 using ClassNegarService.Utils;
 
@@ -420,6 +421,61 @@ namespace ClassNegarService.Repos
                                ProfessorName = u.FirstName + " " + u.LastName
                            }).ToList();
             return classes;
+        }
+
+        public async Task<AdminClassDetailsModel?> GetAdminClassDetails(int classId)
+        {
+            var res = (from c in _dbcontext.Classes
+                       join u in _dbcontext.Users
+                       on c.ProfessorId equals u.Id
+                       where c.Id == classId
+                       select new AdminClassDetailsModel
+                       {
+                           Name = c.Name,
+                           Semester = c.Semester,
+                           ClassLocation = c.ClassLocation,
+                           ProfessorName = u.FirstName + " " + u.LastName,
+                           CurrentSize = c.CurrentSize,
+
+                       }).FirstOrDefault();
+            if (res == null) throw new UnauthorizedAccessException();
+            var attendance = (from s in _dbcontext.Sessions
+                              where s.ClassId == classId
+                              select s.StartedAt).ToList();
+            res.Attendance = attendance;
+
+            var enrollmentCount = (from e in _dbcontext.Enrollments
+                                   where e.ClassId == classId
+                                   select e).Count();
+
+            var sessions = (from s in _dbcontext.Sessions
+                            where s.ClassId == classId
+                            orderby s.StartedAt
+                            select s).ToList();
+
+            res.ClassSessions = sessions.Count;
+            res.ClassAttendance = new List<int>();
+            int total = 0;
+            foreach (var s in sessions)
+            {
+                var sessionAttendance = (from a in _dbcontext.StudentAttendances
+                                         where a.SessionId == s.Id
+                                         select a).Count();
+                var inpercent = (sessionAttendance * 100) / enrollmentCount;
+                res.ClassAttendance.Add(inpercent);
+                total += inpercent;
+
+            }
+            res.ClassAttendance.AddRange(Enumerable.Repeat(0, 10 - res.ClassAttendance.Count % 10));
+            if (res.ClassSessions == 0)
+                res.MediumOfClassAttendance = 0;
+            else
+                res.MediumOfClassAttendance = total / res.ClassSessions;
+
+
+            return res;
+
+
         }
     }
 

@@ -203,6 +203,12 @@ namespace ClassNegarService.Services
             var result = await _classRepo.GetAllAdminReportClasses();
             return result;
         }
+
+        public async Task<AdminClassDetailsModel?> GetAdminClassDetails(int classId)
+        {
+            var result = await _classRepo.GetAdminClassDetails(classId);
+            return result;
+        }
     }
 }
 

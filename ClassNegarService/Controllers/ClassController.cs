@@ -561,6 +561,44 @@ namespace ClassNegarService.Controllers
         }
 
 
+        [HttpGet]
+        [Route("adminclassdetails/{id}")]
+        [CheckAdmin]
+        public async Task<IActionResult> GetAdminClassDetails(int id)
+        {
+
+            try
+            {
+                var result = await _classService.GetAdminClassDetails(id);
+
+                return Ok(new ResponseModel<AdminClassDetailsModel?>
+                {
+                    Result = result,
+                    Message = "done"
+                });
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new ResponseModel<string>
+                {
+                    Result = "",
+                    Message = ex.Message + ex.InnerException
+                });
+            }
+
+        }
+
+
 
 
         private string? getUserName()

@@ -28,6 +28,9 @@ namespace ClassNegarService.Repos
         public Task<List<AdminClassModel>> GetAllDoneClasses();
         public Task<List<AdminClassCalendarModel>> GetAdminClassCalendar();
         public Task<List<AdminReportClassModel>> GetAllAdminReportClasses();
+        public Task<AdminClassDetailsModel?> GetAdminClassDetails(int classId);
+
+
 
 
 
